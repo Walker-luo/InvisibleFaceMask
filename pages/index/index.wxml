@@ -1,0 +1,28 @@
+<!-- index.wxml -->
+<navigation-bar title="DeepFake" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+
+<view class="container">
+  
+  <!-- 上传图片 -->
+  <view class="upload-section">
+    <image src="{{imagePath}}" class="preview"/>
+    <button bindtap="chooseImage">上传图片</button>
+  </view>
+
+  <!-- 噪声参数调整 -->
+  <view class="settings">
+    <slider min="0" max="100" value="{{noiseLevel}}" bindchange="setNoiseLevel"/>
+    <text>噪声强度: {{noiseLevel}}</text>
+  </view>
+
+  <!-- 处理按钮 -->
+  <view class="process">
+    <button bindtap="processImage">处理图片</button>
+  </view>
+
+  <!-- 输出图片 -->
+  <view class="output">
+    <image src="{{processedImagePath}}" class="processed-preview"/>
+    <button bindtap="downloadImage">下载图片</button>
+  </view>
+</view>
