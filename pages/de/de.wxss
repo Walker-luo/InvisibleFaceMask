@@ -1,0 +1,46 @@
+.delete{
+    position:absolute;
+    right:10;
+    top:0;
+    width:30rpx!important;
+    height:30rpx!important;
+    z-index: 3;
+    right: 0;
+  }
+  .upload_box{
+    display: flex;
+    width: 100%;
+    flex-wrap:wrap;
+  }
+  .button_box{
+    background-color: rgb(248,248,248);
+      border-radius: 15rpx;
+      border: 1px solid rgba(0,0,0,0.08);
+      height: 149rpx;
+      width: 147rpx;    
+      z-index: 6;
+      margin-left: 20rpx;
+  }
+  .upload-imgs{
+    position:relative;
+    background-color: rgb(248,248,248);
+    border-radius: 15rpx;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 10rpx 10rpx 10rpx 10rpx;
+    margin-left: 20rpx;
+    margin-bottom: 20rpx;
+    height: 134rpx;
+  }
+   
+  .content{
+    width: 134rpx;
+    height: 130rpx;
+    z-index: 2;
+  }
+   
+  .upload_box button image{
+    width: 60rpx;
+    height: 60rpx;
+    margin-top: 45rpx;
+    margin-left: 15rpx;
+  }
