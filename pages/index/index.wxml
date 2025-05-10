@@ -1,9 +1,8 @@
 <!-- index.wxml -->
-<navigation-bar title="DeepFake" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="Refuse DeepFake" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 
 <view class="container">
   
-
 <!-- 图片上传：合并上传与预览区域 -->
     <view class="upload-preview" bindtap="chooseImage">
         <image wx:if="{{imagePath}}" src="{{imagePath}}" class="preview-image"/>
@@ -36,5 +35,14 @@
         <button class="download-btn" bindtap="downloadImage">下载图片</button>
     </view>
   </view>
+
+    <view class="usage-doc">
+        <text class="doc-title">使用说明：</text>
+        <!-- 将单行文本拆分为独立块级元素 -->
+        <view class="doc-item">1. 点击上传区域选择JPG/PNG格式图片</view>
+        <view class="doc-item">2. 点击"处理图片"注入防御性噪声</view>
+        <view class="doc-item">3. 下载处理后图片用于安全分享</view>
+        <view class="doc-note">* 噪声强度自动适配图片分辨率</view>
+    </view>
 
 </view>

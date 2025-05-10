@@ -3,9 +3,10 @@
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 30px;
+    min-height: 100vh; /* 关键调整项 */
+    padding: 30rpx; /* 改用响应式单位 */
     background-color: #f5f5f5;
+    box-sizing: border-box; /* 新增 */
   }
   
   /* 页面标题 */
@@ -166,6 +167,32 @@
   .download-btn {
     background: #1989fa linear-gradient(145deg, #1989fa, #066dd9) !important;
   }
+
+/* 核心间距控制 */
+.usage-doc {
+    margin: 20rpx 0;  /* 控制整体外间距 [7](@ref) */
+    padding: 20rpx;
+  }
+  
+  .doc-title {
+    display: block;
+    margin-bottom: 10rpx;  /* 标题与内容间距 */
+    font-size: 28rpx;
+    color: #1989fa;
+  }
+  
+  .doc-item, .doc-note {
+    margin: 12rpx 0;  /* 每个要点上下间距 [4,7](@ref) */
+    line-height: 1.4;  /* 压缩行高 [1,6](@ref) */
+    font-size: 26rpx;
+  }
+  
+  .doc-note {
+    color: #999;
+    margin-top: 16rpx;  /* 备注特殊间距 */
+  }
+
+
 
 
   
