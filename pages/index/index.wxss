@@ -127,7 +127,7 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    gap: 20rpx; /* 现代浏览器支持 */
+    column-gap: 20rpx; /* 现代浏览器支持 */
   }
   
   /* 按钮通用样式 */
@@ -143,11 +143,6 @@
     margin-right: 10rpx; /* 兼容旧版 */
   }
   
-  /* 清除最后一个元素的间距 */
-  .action-buttons button:last-child {
-    margin-right: 0;
-  }
-
 
   .process-btn, .download-btn {
     flex: 1;
