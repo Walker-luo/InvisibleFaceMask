@@ -1,34 +1,29 @@
-/* 容器布局 */
 /* 整体容器 */
 .container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* 关键调整项 */
-    padding: 30rpx; /* 改用响应式单位 */
+    min-height: 100vh;
+    padding: 30rpx;
     background-color: #f5f5f5;
-    box-sizing: border-box; /* 新增 */
+    box-sizing: border-box;
+    width: 100%;
   }
   
   /* 页面标题 */
   .title {
-    font-size: 24px;
+    font-size: 36rpx;
     font-weight: bold;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 30rpx;
+    text-align: center;
   }
   
-  /* 上传图片区域 */
-  /* .upload-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-  } */
-/* index.wxss */
+/* 上传图片区域 */
 .upload-preview {
-    width: 90%;
-    height: 400rpx;
+    /* 这些尺寸将作为没有图片时的“默认”或“初始”尺寸 */
+    width: 80%;
+    height: 60vh;
+    max-height: 500rpx;
     margin: 20rpx auto;
     border: 4rpx dashed #ccc;
     border-radius: 16rpx;
@@ -36,45 +31,35 @@
     justify-content: center;
     align-items: center;
     position: relative;
-  }
   
-  .upload-placeholder {
-    text-align: center;
-  }
-  
-  .upload-text {
-    font-size: 32rpx;
-    color: #666;
-    display: block;
-  }
-  
-  .upload-hint {
-    font-size: 24rpx;
-    color: #999;
-    display: block;
-    margin-top: 20rpx;
+    /* 推荐：为宽高变化添加过渡效果，让尺寸变化更平滑 */
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
   }
   
   .preview-image {
+    /* 让图片填满它的（动态尺寸的）父容器 */
     width: 100%;
     height: 100%;
-    border-radius: 12rpx;
+    border-radius: 12rpx; /* border-radius比父容器略小，效果更好 */
+  }
+  
+  .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #888;
+  }
+  .upload-text {
+    font-size: 32rpx;
+  }
+  .upload-hint {
+    font-size: 24rpx;
+    margin-top: 10rpx;
   }
 
-
-  /* 按钮样式（上传、处理、下载） */
-  /* button {
-    background-color: #007aff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
-  } */
-
+  
   /* 输出区域 */
-.output {
+  .output {
     width: 90%;
     margin: 30rpx auto;
     display: flex;
@@ -82,147 +67,94 @@
     align-items: center;
   }
   
-    
+  /* 保持单一定义，设定响应高度与统一边距 */
   .processed-preview {
-    /* width: 250px; */
     width: 90%;
-    height: 350px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    /* object-fit: cover; */
-    margin-bottom: 10px;
-  }
-
-  .processed-preview {
-    width: 100%;
-    height: 400rpx;
+    height: 40vh;
+    max-height: 400rpx;
+    border: 1rpx solid #ddd;
     border-radius: 16rpx;
     margin-bottom: 30rpx;
+    object-fit: cover;
   }
   
-  /* .action-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-  } */
-  
 
-
-
-  /* .process-btn, .download-btn {
-    flex: 1;
-    height: 80rpx;
-    line-height: 80rpx;
-    font-size: 30rpx;
-    border-radius: 12rpx;
-    color: #fff;
-    background-color: rgb(10, 25, 230);
-    text-align: center;
-  } */
-
-/* 父容器 */
+  /* 按钮区域 */
 .action-buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 100%;
-    column-gap: 20rpx; /* 现代浏览器支持 */
+    width: 90%;
+    margin: 0 auto;
+    gap: 15rpx;
+    /* 此处warning可以忽略 */
   }
   
-  /* 按钮通用样式 */
   .action-buttons button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1; /* 关键调整项 */
-    height: 100rpx;
-    font-size: 32rpx;
-    border-radius: 16rpx;
-    box-sizing: border-box;
-    margin-right: 10rpx; /* 兼容旧版 */
-  }
-  
-
-  .process-btn, .download-btn {
     flex: 1;
     height: 80rpx;
     line-height: 80rpx;
     font-size: 30rpx;
     border-radius: 12rpx;
-    color: white !important; /* 确保文字始终白色 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
     transition: all 0.2s ease;
-    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
   }
   
   .process-btn {
-    background: #07c160 linear-gradient(145deg, #07c160, #05a84d) !important;
+    background: linear-gradient(145deg, #07c160, #05a84d) !important;
   }
   
   .download-btn {
-    background: #1989fa linear-gradient(145deg, #1989fa, #066dd9) !important;
+    background: linear-gradient(145deg, #1989fa, #066dd9) !important;
   }
-
-/* 核心间距控制 */
-.usage-doc {
-    margin: 20rpx 0;  /* 控制整体外间距 [7](@ref) */
+  
+  /* 核心间距控制 */
+  .usage-doc {
+    margin: 20rpx 0;
     padding: 20rpx;
   }
   
   .doc-title {
     display: block;
-    margin-bottom: 10rpx;  /* 标题与内容间距 */
+    margin-bottom: 10rpx;
     font-size: 28rpx;
     color: #1989fa;
   }
   
-  .doc-item, .doc-note {
-    margin: 12rpx 0;  /* 每个要点上下间距 [4,7](@ref) */
-    line-height: 1.4;  /* 压缩行高 [1,6](@ref) */
+  .doc-item,
+  .doc-note {
+    margin: 12rpx 0;
+    line-height: 1.4;
     font-size: 26rpx;
   }
   
   .doc-note {
     color: #999;
-    margin-top: 16rpx;  /* 备注特殊间距 */
+    margin-top: 16rpx;
   }
-
-
-
-
   
-/* 新增的设置行：标签与 picker-button 水平排列 */
-/* .settings-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    max-width: 320px;
-  } */
-  
-  /* 噪声类型标签 */
-  /* .settings-label {
-    flex: 1;
-    font-size: 16px;
-    color: #333;
-    text-align: left;
-    margin-right: 20px;  
+
+/* 响应式调整：针对屏幕较小的设备 */
+@media (max-width: 500px) {
+    .title {
+      font-size: 32rpx;
+    }
+    .upload-preview {
+      height: 40vh;
+      max-height: 300rpx;
+    }
+    .processed-preview {
+      height: 40vh;
+      max-height: 300rpx;
+    }
+    .action-buttons button {
+      height: 70rpx;
+      line-height: 70rpx;
+      font-size: 28rpx;
+    }
   }
-   */
-  /* picker组件自定义按钮样式 */
-  /* .picker-button {
-    width: 50%;
-    padding: 12px;
-    margin-left: 8px;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    background-color: #fff;
-    font-size: 16px;
-    color: #333;
-    text-align: center;
-  } */
   
-
-  
-
-

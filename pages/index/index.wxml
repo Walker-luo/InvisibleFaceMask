@@ -1,21 +1,37 @@
 <!-- index.wxml -->
-<navigation-bar title="Refuse DeepFake" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="Invisible FaceMask" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 
 <view class="container">
   
 <!-- 图片上传：合并上传与预览区域 -->
     <view class="upload-preview" bindtap="chooseImage">
-        <image wx:if="{{imagePath}}" src="{{imagePath}}" class="preview-image"/>
+        <image wx:if="{{imagePath}}" src="{{imagePath}}" class="preview-image" mode="aspectFit"/>
         <view wx:else class="upload-placeholder">
             <text class="upload-text">点击上传图片</text>
             <text class="upload-hint">支持jpg/png格式</text>
         </view>
   </view>
 
+<!-- 图片上传：合并上传与预览区域 -->
+<!-- <view class="upload-preview"  bindtap="chooseImage" style="{{ imagePath ? 'width:' + containerWidth + 'px; height:' + containerHeight + 'px;' : '' }}">
+     -->
+    <!-- image 组件不再需要 mode，因为它会刚好填满父容器 -->
+    <!-- <image wx:if="{{imagePath}}" src="{{imagePath}}" class="preview-image"/>
+
+    <view wx:else class="upload-placeholder">
+        <text class="upload-text">点击上传图片</text>
+        <text class="upload-hint">支持jpg/png格式</text>
+    </view>
+</view> -->
+
+
+
+
+
   
   <!-- 输出图片 -->
   <view class="output">
-    <image src="{{processedImagePath}}" class="processed-preview"/>
+    <image src="{{processedImagePath}}" class="processed-preview"  mode="aspectFit"/>
       <!-- 合并后的操作按钮 -->
     <view class="action-buttons">
         <button class="process-btn" bindtap="processImage">处理图片</button>
