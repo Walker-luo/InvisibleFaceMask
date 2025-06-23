@@ -1,64 +1,67 @@
 Page({
     data: {
-      imagePath: "",           // 存储用户选中图片的临时路径
-      processedImagePath: null, // 处理后的图片路径（预览和下载时使用）
-      previewWidth: 0,         // 图片预览宽度（单位：px）
-      previewHeight: 0         // 图片预览高度（单位：px）
+      imageList: [],    // 存储所有选中图片的路径
+      displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
+      processedImageList: [], // 存储处理/上传后的图片URL列表
     },
   
-    // 点击上传区域时调用的函数，调用 wx.chooseMedia 选择图片
     chooseImage: function () {
       wx.chooseMedia({
-        count: 3, // 只允许选择一张图片
-        mediaType: ['image'], // 仅允许选择图片
-        sourceType: ['album', 'camera'], // 可从相册或相机选择
+        // 1. 修改count，允许最多选择20张
+        count: 20, 
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
         success: (res) => {
-            if (res && res.tempFiles && res.tempFiles.length > 0) {
-              const tempFilePath = res.tempFiles[0].tempFilePath;
-              // 获取图片信息，这是计算尺寸的关键
-              wx.getImageInfo({
-                src: tempFilePath,
-                success: (imgRes) => {
-                  // 1. 获取屏幕信息，以确定容器的最大宽度
-                  const windowInfo = wx.getWindowInfo();
-                  const screenWidth = windowInfo.windowWidth;
-                  // 2. 设定容器的最大宽度为屏幕的90% (与WXSS中的初始值对应)
-                  const containerMaxWidth = screenWidth * 0.9;
-    
-                  // 3. 计算缩放后的尺寸
-                  // 我们要让图片的宽度等于容器的最大宽度，然后等比缩放高度
-                  const scale = containerMaxWidth / imgRes.width;
-                  const finalWidth = containerMaxWidth;
-                  const finalHeight = imgRes.height * scale;
-    
-                  // 4. 更新数据，将图片路径和计算出的容器尺寸存入data
-                  this.setData({
-                    imagePath: tempFilePath,
-                    containerWidth: finalWidth,
-                    containerHeight: finalHeight
-                  });
-                },
-              fail: (err) => {
-                console.error("获取图片信息失败：", err);
-                // 如果获取失败，则设置默认预览尺寸
-                this.setData({
-                  imagePath: tempFilePath,
-                  previewWidth: 300,
-                  previewHeight: 300
-                });
-              }
+          if (res && res.tempFiles && res.tempFiles.length > 0) {
+            // 2. 获取所有选中图片的临时路径
+            const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
+            
+            // 3. 截取前3张用于显示
+            const displayPaths = allSelectedPaths.slice(0, 3);
+  
+            // 4. 更新data中的数据
+            this.setData({
+              imageList: allSelectedPaths,
+              displayList: displayPaths,
             });
+  
+            console.log("总共选择了 " + allSelectedPaths.length + " 张图片");
+            console.log("待上传的图片列表:", this.data.imageList);
           }
         },
         fail: (err) => {
-          console.error("选择图片失败：", err);
+          // 用户取消选择时也会进入fail，可以不用提示错误
+          if (err.errMsg !== "chooseMedia:fail cancel") {
+              console.error("选择图片失败：", err);
+          }
         }
       });
     },
   
+    // 你可以在这里添加一个上传函数
+    uploadFiles: function() {
+      if (this.data.imageList.length === 0) {
+        wx.showToast({
+          title: '请先选择图片',
+          icon: 'none'
+        });
+        return;
+      }
+  
+      wx.showLoading({
+        title: '正在上传处理...',
+        mask: true
+      });
+      
+      // 在这里编写你的上传逻辑，遍历 this.data.imageList 数组
+      // 使用 wx.uploadFile
+      console.log("准备上传以下文件:", this.data.imageList);
+      // ...
+    },
+  
     // 模拟处理图片的函数
     processImage: function () {
-      if (!this.data.imagePath) {
+      if (this.data.imageList.length === 0) {
         wx.showToast({
           title: '请先上传图片',
           icon: 'none'
@@ -68,7 +71,7 @@ Page({
       // 这里示例直接将原图作为处理结果显示，
       // 你可以在这里加入实际的图片处理逻辑
       this.setData({
-        processedImagePath: this.data.imagePath
+        processedImageList: this.data.displayList
       });
       wx.showToast({
         title: '图片处理完成',
@@ -78,7 +81,7 @@ Page({
   
     // 下载图片到设备
     downloadImage: function () {
-      if (!this.data.processedImagePath) {
+      if (!this.data.processedImageList) {
         wx.showToast({
           title: '请先处理图片',
           icon: 'none'
@@ -86,7 +89,7 @@ Page({
         return;
       }
       wx.downloadFile({
-        url: this.data.processedImagePath, // 处理后的图片地址
+        url: this.data.processedImageList, // 处理后的图片地址
         success: (res) => {
           if (res.statusCode === 200) {
             wx.saveImageToPhotosAlbum({
