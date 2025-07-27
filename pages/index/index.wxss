@@ -10,17 +10,25 @@
   }
   
   /* 页面标题 */
-  .title {
+/* 页面标题 */
+.title {
+    /* --- 核心修改 --- */
+    width: 100%; /* 关键！让容器宽度撑满屏幕 */
+    
+    /* 你原有的样式，完全正确，继续保留 */
+    text-align: center; /* 在100%宽度的容器内，文本就能实现屏幕居中 */
     font-size: 36rpx;
     font-weight: bold;
     color: #333;
     margin-bottom: 30rpx;
-    text-align: center;
+  
+    /* 建议添加，这是一个好习惯，可以防止未来的padding或border导致布局溢出 */
+    box-sizing: border-box; 
   }
   
 /* 上传图片区域 */
 /* 新的根容器，方便整体布局 */
-/* 新的根容器，方便整体布局 */
+
 .upload-container {
     width: 100%;
     display: flex;
@@ -29,21 +37,20 @@
 }
 
 /* 上传区域主容器 */
+
 .upload-preview {
     width: 90%; /* 容器宽度为屏幕的90% */
-    
     /* 
      * --- 核心修改 1: 设置初始为正方形 ---
      * aspect-ratio: 1; 会让元素的高度自动等于其宽度，形成一个正方形。
-     * 当内容增多时，`height: auto` 会允许它被内容撑开，不再强制为正方形。
-     */
-    aspect-ratio: 1; 
+     * 当内容增多时，`height: auto` 会允许它被内容撑开，不再强制为正方形。*/
+
     height: auto; /* 允许高度根据内容自适应增长 */
-    min-height: 300rpx; /* 保证即使在特殊情况下也有一个最小高度 */
+    min-height: 350rpx; /* 保证即使在特殊情况下也有一个最小高度 */
 
     margin: 20rpx auto;
-    border: 4rpx dashed #ccc;
     border-radius: 16rpx;
+    border: 4rpx dashed #ccc; /* 虚线边框 */
     
     /* 内部使用flex布局，让内容（占位符或图片网格）居中 */
     display: flex;
@@ -55,7 +62,59 @@
     transition: all 0.3s ease;
 }
 
+
+.preview-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200rpx, 1fr));
+    grid-gap: 8px; /* 单位改为px */
+    max-width: 100%;
+
+}
+
+
+.preview-item-image {
+    width: 100%; /* 关键: 让图片宽度填满它所在的网格列 */
+    /* 
+     * 关键: 设置宽高比为1:1，即正方形。
+     * 结合WXML中已有的 mode="aspectFill"，图片会自动填充这个正方形区域，不会变形。
+     * 这是创建统一尺寸网格视图的现代方法。
+     */
+    aspect-ratio: 1 / 1; 
+    border-radius: 8rpx; /* 为图片本身也加上小圆角，视觉效果更佳 */
+}
+
+
+
+.output-container{
+    width: 90%; /* 容器宽度为屏幕的90% */
+    
+    /* 
+     * --- 核心修改 1: 设置初始为正方形 ---
+     * aspect-ratio: 1; 会让元素的高度自动等于其宽度，形成一个正方形。
+     * 当内容增多时，`height: auto` 会允许它被内容撑开，不再强制为正方形。
+     */
+    /* aspect-ratio: 1;  */
+    height: auto; /* 允许高度根据内容自适应增长 */
+    min-height: 400rpx; /* 保证即使在特殊情况下也有一个最小高度 */
+
+    margin: 20rpx auto;
+    border-radius: 16rpx;
+    border: 2rpx solid #e0e0e0; 
+    /* 内部使用flex布局，让内容（占位符或图片网格）居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    padding: 20rpx; /* 内边距，确保图片网格不会紧贴边框 */
+    box-sizing: border-box; /* 让padding包含在width内 */
+    transition: all 0.3s ease;
+}
+
+
+
 /* 图片预览的网格容器 */
+.processed-grid,
 .preview-grid {
     width: 100%;
     height: 100%;
@@ -74,16 +133,15 @@
 }
 
 /* 单个预览图片样式 */
+.processed-item-image,
 .preview-item-image {
     width: 180rpx;  /* 可以适当调整大小以适应容器 */
     height: 180rpx;
     border-radius: 12rpx;
-
-    /* !!! 关键：删除 margin !!! */
-    /* margin: 10rpx; */ /* <-- 删除或注释掉这一行 */
 }
 
 /* 上传占位符 (可以沿用旧的) */
+.output-placeholder,
 .upload-placeholder {
     display: flex;
     flex-direction: column;
@@ -94,6 +152,15 @@
     width: 100%;
     height: 100%;
 }
+
+.upload-placeholder {
+    color: #999;
+}
+.output-placeholder {
+    color: #b0b0b0;
+}
+
+
 .upload-text {
     font-size: 32rpx;
 }
@@ -110,63 +177,35 @@
 }
 
 
-  /* 输出区域 */
-  .output {
-    width: 90%;
-    margin-top: 40rpx;
-    border-top: 1rpx solid #eee;
-    padding-top: 20rpx;
-  }
-  .output-title {
+.output-title {
     font-size: 30rpx;
     font-weight: bold;
     color: #333;
-    display: block;
+    align-self: flex-start;
     margin-bottom: 20rpx;
-  }
-  .processed-grid {
+}
+.output-grid-wrapper {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20rpx;
-  }
-  .processed-item-image {
-    width: 180rpx;
-    height: 180rpx;
-    border-radius: 12rpx;
-    border: 1rpx solid #ddd;
-  }
-  /* 按钮容器样式 */
-  .action-buttons {
-    display: flex;
-    justify-content: space-around;
-    width: 90%;
-    margin-top: 40rpx;
-  }
-  .action-buttons button {
-    flex: 1;
-    margin: 0 10rpx;
-  }
-  .output {
-    width: 90%;
-    margin: 30rpx auto;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  
-  /* 保持单一定义，设定响应高度与统一边距 */
-  .processed-preview {
-    width: 90%;
-    height: 40vh;
-    max-height: 400rpx;
-    border: 1rpx solid #ddd;
-    border-radius: 16rpx;
-    margin-bottom: 30rpx;
-    object-fit: cover;
-  }
-  
+}
+
+
+
+.placeholder-icon {
+    width: 100rpx;
+    height: 100rpx;
+    margin-bottom: 20rpx;
+    opacity: 0.6;
+}
+.placeholder-text {
+    font-size: 28rpx;
+}
+
+
+
 
   /* 按钮区域 */
 .action-buttons {
@@ -174,8 +213,8 @@
     flex-direction: row;
     justify-content: space-between;
     width: 90%;
-    margin: 0 auto;
-    gap: 15rpx;
+    margin: 20rpx auto;
+    gap: 20rpx;
     /* 此处warning可以忽略 */
   }
   

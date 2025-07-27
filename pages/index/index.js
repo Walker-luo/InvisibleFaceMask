@@ -3,6 +3,7 @@ Page({
       imageList: [],    // 存储所有选中图片的路径
       displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
       processedImageList: [], // 存储处理/上传后的图片URL列表
+      processedDisplayList: []
     },
   
     chooseImage: function () {
@@ -17,7 +18,7 @@ Page({
             const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
             
             // 3. 截取前3张用于显示
-            const displayPaths = allSelectedPaths.slice(0, 3);
+            const displayPaths = allSelectedPaths.slice(0, 2);
   
             // 4. 更新data中的数据
             this.setData({
@@ -38,7 +39,7 @@ Page({
       });
     },
   
-    // 你可以在这里添加一个上传函数
+    // 你可以在这里添加一个上传函数，暂时没用
     uploadFiles: function() {
       if (this.data.imageList.length === 0) {
         wx.showToast({
@@ -60,7 +61,7 @@ Page({
     },
   
     // 模拟处理图片的函数
-    processImage: function () {
+    processImages: function () {
       if (this.data.imageList.length === 0) {
         wx.showToast({
           title: '请先上传图片',
@@ -71,7 +72,8 @@ Page({
       // 这里示例直接将原图作为处理结果显示，
       // 你可以在这里加入实际的图片处理逻辑
       this.setData({
-        processedImageList: this.data.displayList
+        processedImageList: this.data.imageList,
+        processedDisplayList: this.data.processedImageList.slice(0,3)
       });
       wx.showToast({
         title: '图片处理完成',
@@ -79,45 +81,76 @@ Page({
       });
     },
   
+
     // 下载图片到设备
-    downloadImage: function () {
-      if (!this.data.processedImageList) {
-        wx.showToast({
-          title: '请先处理图片',
-          icon: 'none'
-        });
-        return;
-      }
+  // 下载多张图片到设备
+downloadImages: function () {
+    // 检查是否有处理后的图片地址数组
+    if (!this.data.processedImageList || !this.data.processedImageList.length) {
+      wx.showToast({
+        title: '请先处理图片',
+        icon: 'none'
+      });
+      return;
+    }
+  
+    const urls = this.data.processedImageList; // 图片地址数组
+    let successCount = 0;
+    let failCount = 0;
+  
+    // 遍历所有图片地址进行下载和保存
+    urls.forEach((imageUrl) => {
       wx.downloadFile({
-        url: this.data.processedImageList, // 处理后的图片地址
+        url: imageUrl, // 单个图片地址
         success: (res) => {
           if (res.statusCode === 200) {
             wx.saveImageToPhotosAlbum({
-              filePath: res.tempFilePath, // 下载后的图片临时路径
+              filePath: res.tempFilePath, // 下载后的临时路径
               success: () => {
-                wx.showToast({
-                  title: '图片已保存',
-                  icon: 'success'
-                });
+                successCount++;
+                // 当所有图片处理完后显示提示
+                if (successCount + failCount === urls.length) {
+                  wx.showToast({
+                    title: failCount ? '部分图片保存失败' : '所有图片已保存',
+                    icon: failCount ? 'none' : 'success'
+                  });
+                }
               },
               fail: (err) => {
                 console.error("保存失败：", err);
-                wx.showToast({
-                  title: '保存失败，请检查权限',
-                  icon: 'none'
-                });
+                failCount++;
+                if (successCount + failCount === urls.length) {
+                  wx.showToast({
+                    title: '部分图片保存失败，请检查权限',
+                    icon: 'none'
+                  });
+                }
               }
             });
+          } else {
+            console.error("下载失败，响应码：", res.statusCode);
+            failCount++;
+            if (successCount + failCount === urls.length) {
+              wx.showToast({
+                title: '部分图片下载失败',
+                icon: 'none'
+              });
+            }
           }
         },
         fail: (err) => {
           console.error("下载失败：", err);
-          wx.showToast({
-            title: '下载失败',
-            icon: 'none'
-          });
+          failCount++;
+          if (successCount + failCount === urls.length) {
+            wx.showToast({
+              title: '部分图片下载失败',
+              icon: 'none'
+            });
+          }
         }
       });
-    }
+    });
+  }
+  
   });
   

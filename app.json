@@ -2,10 +2,14 @@
   "pages": [
     "pages/index/index"
   ],
-  "window": {
-    "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
-  },
+    "window": {
+      "navigationStyle": "default",
+      "backgroundTextStyle": "light",
+      "navigationBarBackgroundColor": "#fff",
+      "navigationBarTitleText": "Invisible FaceMask",
+      "navigationBarTextStyle": "black"
+    },
+
   "style": "v2",
   "renderer": "skyline",
   "rendererOptions": {
@@ -21,4 +25,6 @@
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
+
+
 }
