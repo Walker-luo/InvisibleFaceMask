@@ -10,20 +10,23 @@
   }
   
   /* 页面标题 */
-/* 页面标题 */
-.title {
-    /* --- 核心修改 --- */
-    width: 100%; /* 关键！让容器宽度撑满屏幕 */
-    
-    /* 你原有的样式，完全正确，继续保留 */
-    text-align: center; /* 在100%宽度的容器内，文本就能实现屏幕居中 */
+  .title-container {
+    /* 开启Flex布局 */
+    display: flex;
+  
+    /* 让子项在主轴（水平方向）上居中 */
+    justify-content: center;
+  
+    /* 可以设置宽度和边距等 */
+    width: 100%;
+    margin-bottom: 30rpx;
+  }
+  
+  /* 如果需要，可以单独给text设置样式 */
+  .title-container text {
     font-size: 36rpx;
     font-weight: bold;
     color: #333;
-    margin-bottom: 30rpx;
-  
-    /* 建议添加，这是一个好习惯，可以防止未来的padding或border导致布局溢出 */
-    box-sizing: border-box; 
   }
   
 /* 上传图片区域 */
@@ -69,7 +72,6 @@
     grid-template-columns: repeat(auto-fill, minmax(200rpx, 1fr));
     grid-gap: 8px; /* 单位改为px */
     max-width: 100%;
-
 }
 
 

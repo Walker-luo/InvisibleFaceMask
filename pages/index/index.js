@@ -1,11 +1,30 @@
 Page({
     data: {
+    // 准备一个变量，用来存储状态栏高度
+    statusBarHeight: 0,
       imageList: [],    // 存储所有选中图片的路径
       displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
       processedImageList: [], // 存储处理/上传后的图片URL列表
       processedDisplayList: []
     },
   
+    onLoad(options) {
+        // 在页面加载时，获取系统信息
+        try {
+          const info = wx.getWindowInfo();
+          // 将获取到的状态栏高度（单位px）设置到data中
+          this.setData({
+            statusBarHeight: info.statusBarHeight
+          });
+        } catch (e) {
+          // 获取失败则使用一个默认值
+          this.setData({
+            statusBarHeight: 20 // 兜底值
+          });
+        }
+      },
+
+
     chooseImage: function () {
       wx.chooseMedia({
         // 1. 修改count，允许最多选择20张
@@ -73,6 +92,8 @@ Page({
       // 你可以在这里加入实际的图片处理逻辑
       this.setData({
         processedImageList: this.data.imageList,
+      });
+      this.setData({
         processedDisplayList: this.data.processedImageList.slice(0,3)
       });
       wx.showToast({

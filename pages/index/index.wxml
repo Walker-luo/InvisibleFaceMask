@@ -1,4 +1,11 @@
 <!-- index.wxml -->
+
+<view class="page-container" style="padding-top: {{statusBarHeight}}px;">
+<view class="title-container">
+  <text>Invisible FaceMask</text>
+</view>
+
+
 <view class="container">
 
 <!-- 图片上传与预览区域 -->
@@ -31,8 +38,6 @@
         <block wx:if="{{imageList.length > 2}}">，仅显示前{{displayList.length}}张</block>
     </view>
 </view>
-
-
 
 
 
@@ -82,4 +87,5 @@
         <view class="doc-note">* 噪声强度自动适配图片分辨率</view>
     </view>
 
+</view>
 </view>
