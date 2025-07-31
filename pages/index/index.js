@@ -5,8 +5,13 @@ Page({
       imageList: [],    // 存储所有选中图片的路径
       displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
       processedImageList: [], // 存储处理/上传后的图片URL列表
-      processedDisplayList: []
+      processedDisplayList: [],
+      isProcessing: false,         
+      uploadUrl: 'http://202.120.36.7:40555/upload',  // 图片上传接口
+      processUrl: 'http://202.120.36.7:40555/process', // 图片处理接口
+      downloadBaseUrl: 'http://202.120.36.7:40555/download/' // 下载基础路径
     },
+
   
     onLoad(options) {
         // 在页面加载时，获取系统信息
@@ -36,13 +41,15 @@ Page({
             // 2. 获取所有选中图片的临时路径
             const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
             
-            // 3. 截取前3张用于显示
+            // 3. 截取前2张用于显示
             const displayPaths = allSelectedPaths.slice(0, 2);
   
             // 4. 更新data中的数据
             this.setData({
               imageList: allSelectedPaths,
               displayList: displayPaths,
+              processedImageList: [], 
+              processedDisplayList: [],
             });
   
             console.log("总共选择了 " + allSelectedPaths.length + " 张图片");
@@ -79,32 +86,132 @@ Page({
       // ...
     },
   
-    // 模拟处理图片的函数
-    processImages: function () {
-      if (this.data.imageList.length === 0) {
-        wx.showToast({
-          title: '请先上传图片',
-          icon: 'none'
+
+    processImages: function() {
+        if (this.data.imageList.length === 0) {
+            wx.showToast({ title: '请先上传图片', icon: 'none' });
+            return;
+        }
+        if (this.data.isProcessing) return;
+        
+        const that = this;
+        that.setData({ isProcessing: true });
+        wx.showLoading({ title: '处理中...', mask: true });
+    
+        // 上传并处理图像：得到fid 和 对应filename
+        const uploadTasks = this.data.imageList.map(filePath => {
+            return new Promise((resolve, reject) => {
+                // 1. 读取文件为Base64编码
+                wx.getFileSystemManager().readFile({
+                    filePath: filePath,
+                    encoding: 'base64',
+
+                    success: (readRes) => {
+                        // 2. 发送包含处理指令的请求
+                        wx.request({
+                            url: that.data.uploadUrl, // 
+                            method: 'POST',
+                            header: { 'Content-Type': 'application/json' },
+                            data: {
+                                image: readRes.data,
+                                filename: filePath.split('/').pop(),
+                            },
+
+                            success: (res) => {
+                                if (res.statusCode === 200) { 
+                                    if (res.data && res.data.success) { 
+                                        resolve({
+                                            fileId: res.data.file_id,
+                                            originalName: res.data.original_filename
+                                        });
+                                    } else {
+                                        reject(new Error(res.data?.message || `上传失败(CODE ${res.statusCode})`))
+                                    }
+                                } else {
+                                    reject(new Error(`HTTP错误: ${res.statusCode}`));
+                                }
+                            },
+                            fail: (err) => {
+                                const errInfo = err.errMsg.includes('timeout') ? 
+                                    '网络超时' : '网络连接失败';
+                                reject(new Error(errInfo));
+                            }
+                        });
+                    },
+                    fail: (err) => {
+                        reject(new Error('图片转码失败: ' + err.errMsg));
+                    }
+                });
+            });
         });
-        return;
-      }
-      // 这里示例直接将原图作为处理结果显示，
-      // 你可以在这里加入实际的图片处理逻辑
-      this.setData({
-        processedImageList: this.data.imageList,
-      });
-      this.setData({
-        processedDisplayList: this.data.processedImageList.slice(0,3)
-      });
-      wx.showToast({
-        title: '图片处理完成',
-        icon: 'success'
-      });
+
+    // 图片展示部分
+    Promise.all(uploadTasks)
+        .then(metadataResults => {
+        // 存储所有fileId用于后续操作
+        const allFileIds = metadataResults.map(item => item.fileId);
+        
+        // 获取处理后的图片（仅获取前三张）
+        const previewLimit = Math.min(3, allFileIds.length); // 最多获取3张
+        const previewTasks = [];
+
+        for (let i = 0; i < previewLimit; i++) {
+            previewTasks.push(new Promise(resolve => {
+            wx.request({
+                url: `${that.data.processUrl}/${allFileIds[i]}`,
+                responseType: 'arraybuffer',
+                success: (imgRes) => {
+                if (imgRes.statusCode === 200) {
+                    const base64 = wx.arrayBufferToBase64(imgRes.data);
+                    resolve(`data:image/jpeg;base64,${base64}`);
+                } else {
+                    resolve(null); // 标记获取失败
+                }
+                },
+                fail: () => resolve(null)
+            });
+            }));
+        }
+
+        // 更新展示图片（非阻塞主流程）
+        Promise.all(previewTasks).then(previewUrls => {
+            that.setData({
+            processedDisplayList: previewUrls.filter(url => url !== null)
+            });
+        });
+
+        // 设置完整图片列表（包含占位符）
+        const fullImageList = allFileIds.map((id, index) => 
+            index < previewLimit ? previewUrls[index] : 'pending'
+        );
+        
+        that.setData({
+            processedImageList: fullImageList,  // 包含所有图片标识
+            totalProcessedCount: allFileIds.length // 存储总数量
+        });
+        
+        return allFileIds;
+        })
+        .then(allFileIds => {
+        // 此处可添加后续操作（如保存元数据到数据库）
+        console.log('全部处理完成，FileIDs:', allFileIds);
+        wx.showToast({ title: `成功处理${allFileIds.length}张图片` });
+        })
+        .catch(err => {
+        console.error('处理流程错误', err);
+        wx.showToast({ 
+            title: `失败: ${err.message.substring(0, 30)}`,
+            icon: 'none',
+            duration: 5000
+        });
+        })
+        .finally(() => {
+        that.setData({ isProcessing: false });
+        wx.hideLoading();
+        });
     },
-  
 
     // 下载图片到设备
-  // 下载多张图片到设备
 downloadImages: function () {
     // 检查是否有处理后的图片地址数组
     if (!this.data.processedImageList || !this.data.processedImageList.length) {
