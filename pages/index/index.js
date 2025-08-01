@@ -207,21 +207,95 @@ Page({
 },
 
 // downloadImages 函数的逻辑保持不变，因为它本身就是基于 URL 下载的，非常正确
-    downloadImages: function () 
-    {
+    downloadImages: function() {
         if (!this.data.processedImageList || !this.data.processedImageList.length) {
-        wx.showToast({ title: '请先处理图片', icon: 'none' });
-        return;
+            wx.showToast({ title: '请先处理图片', icon: 'none' });
+            return;
         }
-    
+
+        // 核心：先获取用户当前的授权状态
+        wx.getSetting({
+            success: (res) => {
+                const authState = res.authSetting['scope.writePhotosAlbum'];
+
+                if (authState === true) {
+                    // 情况一：用户已经授权过，直接开始下载
+                    this.startBatchDownload();
+                } else if (authState === false) {
+                    // 情况二：用户明确拒绝过授权，需要引导用户去设置页手动开启
+                    wx.showModal({
+                        title: '授权提示',
+                        content: '需要您的授权才能保存图片到相册，是否去设置中开启？',
+                        success: (modalRes) => {
+                            if (modalRes.confirm) {
+                                // 用户同意去设置页
+                                wx.openSetting({
+                                    success: (settingRes) => {
+                                        // 用户在设置页操作后返回
+                                        if (settingRes.authSetting['scope.writePhotosAlbum']) {
+                                            wx.showToast({ title: '授权成功', icon: 'success' });
+                                            // 授权成功，开始下载
+                                            this.startBatchDownload();
+                                        } else {
+                                            wx.showToast({ title: '您未授权', icon: 'none' });
+                                        }
+                                    }
+                                });
+                            } else {
+                                wx.showToast({ title: '您取消了操作', icon: 'none' });
+                            }
+                        }
+                    });
+                } else {
+                    // 情况三：用户从未授权过 (authState 为 undefined)，主动发起一次授权请求
+                    wx.authorize({
+                        scope: 'scope.writePhotosAlbum',
+                        success: () => {
+                            // 用户在弹窗中点击了“允许”
+                            this.startBatchDownload();
+                        },
+                        fail: () => {
+                            // 用户在弹窗中点击了“拒绝”
+                            wx.showToast({ title: '您拒绝了授权', icon: 'none' });
+                        }
+                    });
+                }
+            },
+            fail: (err) => {
+                console.error("获取权限设置失败", err);
+                wx.showToast({ title: '检查授权失败', icon: 'none' });
+            }
+        });
+    },
+
+    /**
+     * 【新增的】串行批量下载辅助函数
+     * @description 只有在获取到权限后才会被调用
+     */
+    startBatchDownload: function() {
         const imagesToDownload = this.data.processedImageList;
+        const totalCount = imagesToDownload.length;
         let successCount = 0;
         let failCount = 0;
-        wx.showLoading({ title: '保存中...', mask: true });
 
-        imagesToDownload.forEach((imageInfo, index) => {
+        // 使用递归函数实现串行下载
+        const downloadNext = (index) => {
+            // 递归的终止条件：所有图片都已处理完毕
+            if (index >= totalCount) {
+                wx.hideLoading();
+                wx.showToast({
+                    title: failCount ? `成功${successCount},失败${failCount}` : '全部保存成功',
+                    icon: failCount ? 'none' : 'success',
+                    duration: 2000
+                });
+                return;
+            }
+
+            const imageInfo = imagesToDownload[index];
             const downloadUrl = `${this.data.fetchImageUrlBase}${imageInfo.fileId}`;
-            
+            // 提供清晰的进度提示
+            wx.showLoading({ title: `正在保存第 ${index + 1}/${totalCount} 张`, mask: true });
+
             wx.downloadFile({
                 url: downloadUrl,
                 success: (res) => {
@@ -230,39 +304,31 @@ Page({
                             filePath: res.tempFilePath,
                             success: () => {
                                 successCount++;
-                                if (successCount + failCount === imagesToDownload.length) {
-                                    wx.hideLoading();
-                                    wx.showToast({
-                                        title: failCount ? `成功${successCount},失败${failCount}` : '全部保存成功',
-                                        icon: failCount ? 'none' : 'success'
-                                    });
-                                }
                             },
                             fail: (err) => {
                                 failCount++;
-                                console.error(`保存第 ${index+1} 张图片失败：`, err);
-                                if (successCount + failCount === imagesToDownload.length) {
-                                    wx.hideLoading();
-                                    wx.showToast({ title: `成功${successCount},失败${failCount}`, icon: 'none' });
-                                }
+                                console.error(`保存图片 ${imageInfo.fileId} 失败:`, err);
+                            },
+                            complete: () => {
+                                // 无论成功失败，都继续处理下一张
+                                downloadNext(index + 1);
                             }
                         });
                     } else {
                         failCount++;
-                        if (successCount + failCount === imagesToDownload.length) {
-                            wx.hideLoading();
-                            wx.showToast({ title: `成功${successCount},失败${failCount}`, icon: 'none' });
-                        }
+                        console.error(`下载图片 ${imageInfo.fileId} 失败, 状态码: ${res.statusCode}`);
+                        downloadNext(index + 1);
                     }
                 },
                 fail: (err) => {
                     failCount++;
-                    if (successCount + failCount === imagesToDownload.length) {
-                        wx.hideLoading();
-                        wx.showToast({ title: `成功${successCount},失败${failCount}`, icon: 'none' });
-                    }
+                    console.error(`下载图片 ${imageInfo.fileId} 失败:`, err);
+                    downloadNext(index + 1);
                 }
             });
-        });
+        };
+
+        // 从第一张图片(索引为0)开始执行下载链
+        downloadNext(0);
     }
 })
