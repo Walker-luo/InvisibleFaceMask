@@ -181,9 +181,9 @@ Page({
                 processedImageList: fullProcessedList,
             });
 
-            console.log('--- 检查 processedImageList ---');
-            console.log('刚刚设置到 data 中的 processedImageList 的值是:', that.data.processedImageList);
-            console.log('原始数组 fullProcessedList 的值是:', fullProcessedList);
+            // console.log('--- 检查 processedImageList ---');
+            // console.log('刚刚设置到 data 中的 processedImageList 的值是:', that.data.processedImageList);
+
             
             return allFileIds;
         })
@@ -220,7 +220,7 @@ Page({
         wx.showLoading({ title: '保存中...', mask: true });
 
         imagesToDownload.forEach((imageInfo, index) => {
-            const downloadUrl = `${this.data.fetchImageUrlBase}${imageInfo.fileId}/${imageInfo.type}`;
+            const downloadUrl = `${this.data.fetchImageUrlBase}${imageInfo.fileId}`;
             
             wx.downloadFile({
                 url: downloadUrl,
