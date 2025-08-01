@@ -3,6 +3,7 @@
   "projectname": "Invisible FaceMask",
   "setting": {
     "compileHotReLoad": true,
-    "skylineRenderEnable": false
+    "skylineRenderEnable": false,
+    "urlCheck": false
   }
 }
