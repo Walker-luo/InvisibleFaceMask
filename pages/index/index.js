@@ -175,13 +175,15 @@ Page({
             // 设置完整图片列表（这部分逻辑不变，依然存储 fileId 和 type 用于后续批量下载）
             const fullProcessedList = allFileIds.map(id => ({ 
                 fileId: id, 
-                type: imageTypeToDisplay 
             }));
             
             that.setData({
                 processedImageList: fullProcessedList,
-                totalProcessedCount: allFileIds.length
             });
+
+            console.log('--- 检查 processedImageList ---');
+            console.log('刚刚设置到 data 中的 processedImageList 的值是:', that.data.processedImageList);
+            console.log('原始数组 fullProcessedList 的值是:', fullProcessedList);
             
             return allFileIds;
         })
