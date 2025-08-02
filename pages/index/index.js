@@ -2,13 +2,15 @@ Page({
     data: {
     // 准备一个变量，用来存储状态栏高度
     statusBarHeight: 0,
-      imageList: [],    // 存储所有选中图片的路径
-      displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
-      processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
-      processedDisplayList: [], // 存储用于界面展示的图片列表
-      isProcessing: false,         
-      uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
-      fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
+    isProcessBtnActive: false, 
+    isDownloadBtnActive: false,
+    imageList: [],    // 存储所有选中图片的路径
+    displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
+    processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
+    processedDisplayList: [], // 存储用于界面展示的图片列表
+    isProcessing: false,         
+    uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
+    fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
     },
 
   
@@ -28,6 +30,16 @@ Page({
         }
       },
 
+    // 1. 在页面加载时初始化动画实例
+    onReady: function () {
+    this.animation = wx.createAnimation({
+        duration: 500, // 动画持续时间，单位 ms
+        timingFunction: 'ease-out', // 动画效果
+    });
+    },
+
+
+
 
     chooseImage: function () {
       wx.chooseMedia({
@@ -41,7 +53,7 @@ Page({
             const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
             
             // 3. 截取前2张用于显示
-            const displayPaths = allSelectedPaths.slice(0, 2);
+            const displayPaths = allSelectedPaths.slice(0, 3);
   
             // 4. 更新data中的数据
             this.setData({
@@ -63,6 +75,15 @@ Page({
         }
       });
     },
+
+    // 处理按钮的触摸事件
+    onProcessBtnTouchStart() { this.setData({ isProcessBtnActive: true }); },
+    onProcessBtnTouchEnd() { this.setData({ isProcessBtnActive: false }); },
+
+    // 下载按钮的触摸事件
+    onDownloadBtnTouchStart() { this.setData({ isDownloadBtnActive: true }); },
+    onDownloadBtnTouchEnd() { this.setData({ isDownloadBtnActive: false }); },
+    
 
 
     processImages: function() {
@@ -206,7 +227,7 @@ Page({
         });
 },
 
-// downloadImages 函数的逻辑保持不变，因为它本身就是基于 URL 下载的，非常正确
+// downloadImages 
     downloadImages: function() {
         if (!this.data.processedImageList || !this.data.processedImageList.length) {
             wx.showToast({ title: '请先处理图片', icon: 'none' });

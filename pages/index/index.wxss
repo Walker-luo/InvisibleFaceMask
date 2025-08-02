@@ -1,60 +1,85 @@
-/* 整体容器 */
-.container {
-    display: flex;
-    flex-direction: column;
+/*页面容器 */
+.page-container {
+    background: linear-gradient(to bottom, #f7f8fa, #ffffff);
     min-height: 100vh;
-    padding: 30rpx;
-    background-color: #f5f5f5;
-    box-sizing: border-box;
-    width: 100%;
+    padding-top: env(safe-area-inset-top);  /* 替代 statusBarHeight */
+    padding-bottom: env(safe-area-inset-bottom); /* 避开底部横条 */
   }
-  
-  /* 页面标题 */
-  .title-container {
-    /* 开启Flex布局 */
+
+
+/* 页面标题 */
+.title-container {
     display: flex;
-  
-    /* 让子项在主轴（水平方向）上居中 */
-    justify-content: center;
-  
-    /* 可以设置宽度和边距等 */
-    width: 100%;
+    justify-content: center;    /* 让子项在主轴（水平方向）上居中 */
+    width: 100%;     /* 可以设置宽度和边距等 */
     margin-bottom: 30rpx;
-  }
-  
-  /* 如果需要，可以单独给text设置样式 */
-  .title-container text {
+    
+    font-size: 48rpx;
+    font-weight: bold;
+    color: #1f2329;
+    }
+    
+/* 可以单独给text设置样式 */
+.title-container text {
     font-size: 36rpx;
     font-weight: bold;
     color: #333;
+    /* 应用渐变背景到文字上 */
+    background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+    -webkit-background-clip: text ; /* 将背景裁剪为文字的形状 */
+    background-clip: text;
+    /* 关键：设置文字颜色为透明，从而透出下方的背景 */
+    color: transparent;
+    }
+
+
+    
+
+/* 主体容器 */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 40rpx 40rpx 40rpx; /* 调整内边距，顶部不需要了 */
+    box-sizing: border-box;
+    width: 100%;
+    background-color: transparent; /* 移除背景色 */
   }
   
-/* 上传图片区域 */
-/* 新的根容器，方便整体布局 */
 
+/* 上传图片区域 */
 .upload-container {
-    width: 100%;
+    width: 90%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin: 20rpx auto; /* 区域居中 */
+    /* 圆角阴影 */
+    border-radius: 16rpx;
+    box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.08);
+    /* --- 毛玻璃效果 --- */
+    background: rgba(255, 255, 255, 0.5); /* 白色半透明背景 */
+    backdrop-filter: blur(25px);         /* 背景模糊滤镜 */
+    -webkit-backdrop-filter: blur(25px);
+    /* --- 细节优化 --- */
+    border: 1px solid rgba(106, 17, 203, 0.4); /* 柔和的亮色边框 */
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);    /* 更弥散的阴影 */
+    transition: all 0.3s ease;
 }
 
-/* 上传区域主容器 */
+
+.upload-text {
+    font-size: 32rpx;
+    color: #333;
+}
 
 .upload-preview {
-    width: 90%; /* 容器宽度为屏幕的90% */
-    /* 
-     * --- 核心修改 1: 设置初始为正方形 ---
-     * aspect-ratio: 1; 会让元素的高度自动等于其宽度，形成一个正方形。
-     * 当内容增多时，`height: auto` 会允许它被内容撑开，不再强制为正方形。*/
-
+    width: 95%; /* 容器宽度为屏幕的90% */
     height: auto; /* 允许高度根据内容自适应增长 */
     min-height: 350rpx; /* 保证即使在特殊情况下也有一个最小高度 */
-
     margin: 20rpx auto;
     border-radius: 16rpx;
-    border: 4rpx dashed #ccc; /* 虚线边框 */
-    
+    border: 3rpx dashed rgba(0, 0, 0, 0.2); /* 虚线颜色更淡、更细 */
     /* 内部使用flex布局，让内容（占位符或图片网格）居中 */
     display: flex;
     justify-content: center;
@@ -64,7 +89,6 @@
     box-sizing: border-box; /* 让padding包含在width内 */
     transition: all 0.3s ease;
 }
-
 
 .preview-grid {
     width: 100%;
@@ -83,33 +107,39 @@
      * 这是创建统一尺寸网格视图的现代方法。
      */
     aspect-ratio: 1 / 1; 
-    border-radius: 8rpx; /* 为图片本身也加上小圆角，视觉效果更佳 */
+    border-radius: 12rpx; /* 为图片本身也加上小圆角，视觉效果更佳 */
+
 }
-
-
 
 .output-container{
     width: 90%; /* 容器宽度为屏幕的90% */
-    
-    /* 
-     * --- 核心修改 1: 设置初始为正方形 ---
-     * aspect-ratio: 1; 会让元素的高度自动等于其宽度，形成一个正方形。
-     * 当内容增多时，`height: auto` 会允许它被内容撑开，不再强制为正方形。
-     */
-    /* aspect-ratio: 1;  */
     height: auto; /* 允许高度根据内容自适应增长 */
     min-height: 400rpx; /* 保证即使在特殊情况下也有一个最小高度 */
 
     margin: 20rpx auto;
     border-radius: 16rpx;
     border: 2rpx solid #e0e0e0; 
+    
     /* 内部使用flex布局，让内容（占位符或图片网格）居中 */
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     padding: 20rpx; /* 内边距，确保图片网格不会紧贴边框 */
     box-sizing: border-box; /* 让padding包含在width内 */
+    transition: all 0.3s ease;
+    /* 圆角阴影 */
+    border-radius: 16rpx;
+    box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.08);
+    /* --- 毛玻璃效果核心代码 --- */
+    background: rgba(255, 255, 255, 0.5); /* 白色半透明背景 */
+    backdrop-filter: blur(25px);         /* 背景模糊滤镜 */
+    -webkit-backdrop-filter: blur(25px);
+
+    /* --- 细节优化 --- */
+
+    border: 1px solid rgba(37, 117, 252, 0.4);
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);    /* 更弥散的阴影 */
     transition: all 0.3s ease;
 }
 
@@ -137,10 +167,12 @@
 /* 单个预览图片样式 */
 .processed-item-image,
 .preview-item-image {
-    width: 180rpx;  /* 可以适当调整大小以适应容器 */
-    height: 180rpx;
-    border-radius: 12rpx;
+    width: 150rpx;  /* 可以适当调整大小以适应容器 */
+    height: 150rpx;
+    border-radius: 12rpx; 
+
 }
+
 
 /* 上传占位符 (可以沿用旧的) */
 .output-placeholder,
@@ -194,19 +226,34 @@
     align-items: center;
 }
 
-
-
 .placeholder-icon {
     width: 100rpx;
     height: 100rpx;
     margin-bottom: 20rpx;
     opacity: 0.6;
 }
-.placeholder-text {
-    font-size: 28rpx;
+
+.output-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    
+    /* 关键：让整个占位符有一个轻微的淡入效果，而不是突然出现 */
+    opacity: 0.8; 
+    transition: opacity 0.5s ease;
 }
 
 
+/* 占位符文字的美化 */
+.placeholder-text {
+    font-size: 28rpx;
+    font-weight: 300; /* 使用更细的字重 */
+    color: #8a8a8e;   /* 一个更柔和的灰色 */
+    letter-spacing: 1px; /* ✨ 提升质感的关键：增加字间距 */
+}
 
 
   /* 按钮区域 */
@@ -220,53 +267,77 @@
     /* 此处warning可以忽略 */
   }
   
-  .action-buttons button {
+.action-buttons button {
     flex: 1;
     height: 80rpx;
     line-height: 80rpx;
-    font-size: 30rpx;
+    font-size: 32rpx;
     border-radius: 12rpx;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white !important;
-    transition: all 0.2s ease;
+    transition: transform 0.1s ease-out, background 0.2s ease-out;
     box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-  }
+}
   
-  .process-btn {
+.process-btn {
     background: linear-gradient(145deg, #07c160, #05a84d) !important;
-  }
-  
-  .download-btn {
+    color: white;
+    border: none;
+    /* 关键：添加过渡效果，让 transform 和 box-shadow 的变化更平滑 */
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+
+.download-btn {
     background: linear-gradient(145deg, #1989fa, #066dd9) !important;
-  }
+    color: white;
+    border: none;
+    /* 关键：添加过渡效果，让 transform 和 box-shadow 的变化更平滑 */
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+
+/* 按钮按下的激活状态 (需要JS配合) */
+.btn-active {
+    transform: scale(0.97); /* 按下时轻微缩小 */
+    /* 可以通过改变渐变方向或颜色来增加反馈 */
+    /* background: linear-gradient(135deg, #069b50, #07c160) !important; */
+}
+
   
   /* 核心间距控制 */
   .usage-doc {
-    margin: 20rpx 0;
-    padding: 20rpx;
+    margin-top: 40rpx;
+    padding: 24rpx;
+    background-color: rgba(230, 247, 255, 0.5); /* 淡蓝色半透明背景 */
+    border-radius: 20rpx;
+    border: 1px solid rgba(135, 208, 255, 0.5); /* 对应的淡蓝色边框 */
   }
   
   .doc-title {
     display: block;
-    margin-bottom: 10rpx;
+    margin-bottom: 20rpx;
     font-size: 28rpx;
-    color: #1989fa;
+    font-weight: bold;
+    color: #0d78e3; /* 与下载按钮主色调呼应 */
   }
   
-  .doc-item,
-  .doc-note {
-    margin: 12rpx 0;
-    line-height: 1.4;
+  .doc-item {
+    margin: 16rpx 0;
+    line-height: 1.5;
     font-size: 26rpx;
-  }
+    color: #333;
+    display: flex; /* 为后续添加图标做准备 */
+    align-items: center;
+}
   
-  .doc-note {
-    color: #999;
-    margin-top: 16rpx;
-  }
-  
+.doc-note {
+    margin-top: 20rpx;
+    line-height: 1.5;
+    font-size: 24rpx;
+    color: #888;
+}
+
 
 /* 响应式调整：针对屏幕较小的设备 */
 @media (max-width: 500px) {

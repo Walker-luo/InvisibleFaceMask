@@ -1,91 +1,100 @@
 <!-- index.wxml -->
 
 <view class="page-container" style="padding-top: {{statusBarHeight}}px;">
-<view class="title-container">
-  <text>Invisible FaceMask</text>
-</view>
-
-
-<view class="container">
-
-<!-- 图片上传与预览区域 -->
-<view class="upload-container">
-    <view class="upload-preview" bindtap="chooseImage">
-        <!-- 如果有图片需要展示 -->
-        <block wx:if="{{displayList.length > 0}}">
-            <view class="preview-grid">
-                <!-- 循环展示前三张图片 -->
-                <image 
-                    wx:for="{{displayList}}" 
-                    wx:key="*this" 
-                    src="{{item}}" 
-                    class="preview-item-image" 
-                    mode="aspectFill"
-                />
-            </view>
-        </block>
-
-        <!-- 如果没有图片，则显示上传占位符 -->
-        <view wx:else class="upload-placeholder">
-            <text class="upload-text">点击上传图片</text>
-            <text class="upload-hint">支持jpg/png格式，最多20张</text>
-        </view>
+    <view class="title-container">
+        <text>Invisible FaceMask</text>
     </view>
 
-    <!-- 提示选择了多少张图片 -->
-    <view wx:if="{{imageList.length > 0}}" class="image-count-hint">
-        已选择 {{imageList.length}} 张图片
-        <block wx:if="{{imageList.length > 2}}">，仅显示前{{displayList.length}}张</block>
-    </view>
-</view>
+    <view class="container">
+        <!-- 图片上传与预览区域 -->
+        <view class="upload-container">
+            <view class="upload-preview" bindtap="chooseImage">
+                <!-- 如果有图片需要展示 -->
+                <block wx:if="{{displayList.length > 0}}">
+                    <view class="preview-grid">
+                        <!-- 循环展示前三张图片 -->
+                        <image 
+                            wx:for="{{displayList}}" 
+                            wx:key="*this" 
+                            src="{{item}}" 
+                            class="preview-item-image" 
+                            mode="aspectFill"
+                        />
+                    </view>
+                </block>
 
-
-
-<view class="output-container">
-    <!-- 如果有处理结果，则显示图片网格 -->
-    <block wx:if="{{processedDisplayList.length > 0}}">
-        <view class="output-grid-wrapper">
-            <text class="output-title">处理结果</text>
-            <view class="processed-grid">
-                <!-- 循环展示前三张处理后的图片 -->
-                <image 
-                    wx:for="{{processedDisplayList}}" 
-                    wx:key="*this" 
-                    src="{{item}}" 
-                    class="processed-item-image" 
-                    mode="aspectFit"
-                />
+                <!-- 如果没有图片，则显示上传占位符 -->
+                <view wx:else class="upload-placeholder">
+                    <text class="upload-text">点击上传图片</text>
+                    <text class="upload-hint">支持jpg/png格式，单次最多20张</text>
+                </view>
             </view>
-            <!-- 提示处理了多少张图片 -->
-            <view wx:if="{{processedImageList.length > 0}}" class="image-count-hint">
-                已处理 {{processedImageList.length}} 张图片
-                <block wx:if="{{processedImageList.length > 3}}">，仅显示前3张</block>
+
+            <!-- 提示选择了多少张图片 -->
+            <view wx:if="{{imageList.length > 0}}" class="image-count-hint">
+                已选择 {{imageList.length}} 张图片
+                <block wx:if="{{imageList.length > 2}}">，仅显示前{{displayList.length}}张</block>
             </view>
         </view>
-    </block>
 
-    <!-- 如果没有处理结果，则显示占位符 -->
-    <view wx:else class="output-placeholder">
-        <image src="/images/icon_processed.png" class="placeholder-icon"/>
-        <text class="placeholder-text">处理结果将在此显示</text>
+
+        <view class="output-container">
+            <!-- 如果有处理结果，则显示图片网格 -->
+            <block wx:if="{{processedDisplayList.length > 0}}">
+                <view class="output-grid-wrapper">
+                    <text class="output-title">处理结果</text>
+                    <view class="processed-grid">
+                        <!-- 循环展示前三张处理后的图片 -->
+                        <image 
+                            wx:for="{{processedDisplayList}}" 
+                            wx:key="*this" 
+                            src="{{item}}" 
+                            class="processed-item-image" 
+                            mode="aspectFit"
+                        />
+                    </view>
+                    <!-- 提示处理了多少张图片 -->
+                    <view wx:if="{{processedImageList.length > 0}}" class="image-count-hint">
+                        已处理 {{processedImageList.length}} 张图片
+                        <block wx:if="{{processedImageList.length > 3}}">，仅显示前3张</block>
+                    </view>
+                </view>
+            </block>
+
+            <!-- 如果没有处理结果，则显示占位符 -->
+            <view wx:else class="output-placeholder">
+                <image src="/images/icon_processed.png" class="placeholder-icon"/> 
+                <text class="placeholder-text">处理结果将在此显示</text>
+            </view>
+        </view>
+
+        <!-- 操作按钮区域（保持独立） -->
+        <view class="action-buttons">
+            <!-- <button class="process-btn" bindtap="processImages">处理图片</button> -->
+            <button 
+                class="process-btn {{isProcessBtnActive ? 'btn-active' : ''}}"
+                bindtouchstart="onProcessBtnTouchStart"
+                bindtouchend="onProcessBtnTouchEnd"
+                bindtap="processImages"
+            >处理图片</button>
+            <!-- <button class="download-btn" bindtap="downloadImages">下载全部</button> -->
+            <button 
+                class="download-btn {{isDownloadBtnActive ? 'btn-active' : ''}}"
+                bindtouchstart="onDownloadBtnTouchStartt"
+                bindtouchend="onDownloadBtnTouchEnd"
+                bindtap="downloadImages"
+            >处理图片</button>
+        </view>
+
+
+        <view class="usage-doc">
+            <text class="doc-title">使用说明：</text>
+            <!-- 将单行文本拆分为独立块级元素 -->
+            <view class="doc-item">1. 点击上传区域选择JPG/PNG格式图片</view>
+            <view class="doc-item">2. 点击"处理图片"注入防御性噪声</view>
+            <view class="doc-item">3. 下载处理后图片用于安全分享</view>
+            <view class="doc-note">* 噪声强度自动适配图片分辨率</view>
+        </view>
+
     </view>
-</view>
-
-<!-- 操作按钮区域（保持独立） -->
-<view class="action-buttons">
-    <button class="process-btn" bindtap="processImages">处理图片</button>
-    <button class="download-btn" bindtap="downloadImages">下载全部</button>
-</view>
-
-
-    <view class="usage-doc">
-        <text class="doc-title">使用说明：</text>
-        <!-- 将单行文本拆分为独立块级元素 -->
-        <view class="doc-item">1. 点击上传区域选择JPG/PNG格式图片</view>
-        <view class="doc-item">2. 点击"处理图片"注入防御性噪声</view>
-        <view class="doc-item">3. 下载处理后图片用于安全分享</view>
-        <view class="doc-note">* 噪声强度自动适配图片分辨率</view>
-    </view>
-
-</view>
 </view>
