@@ -1,0 +1,185 @@
+/* 在你原有的 wxss 文件基础上，添加或修改以下样式 */
+
+/* 步骤标题 */
+.title-container {
+    display: flex;
+    justify-content: center;    /* 让子项在主轴（水平方向）上居中 */
+    width: 100%;
+    margin-bottom: 30rpx;
+    
+    font-size: 48rpx;
+    font-weight: bold;
+    color: #1f2329;
+}
+
+/* 为标题图片添加样式 */
+.title-image {
+    width: 50%; 
+}
+
+/* 主体容器 */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 40rpx 40rpx 40rpx; /* 调整内边距，顶部不需要了 */
+    box-sizing: border-box;
+    width: 100%;
+    background-color: transparent; /* 移除背景色 */
+  }
+  
+
+/* 智能上传框 */
+.upload-container {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20rpx auto; /* 区域居中 */
+    /* 圆角阴影 */
+    border-radius: 16rpx;
+    box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.08);
+    /* --- 毛玻璃效果 --- */
+    background: rgba(255, 255, 255, 0.5); /* 白色半透明背景 */
+    backdrop-filter: blur(25px);         /* 背景模糊滤镜 */
+    -webkit-backdrop-filter: blur(25px);
+    /* --- 细节优化 --- */
+    border: 1px solid rgba(106, 17, 203, 0.4); /* 柔和的亮色边框 */
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);    /* 更弥散的阴影 */
+    transition: all 0.3s ease;
+}
+.smart-upload-box {
+    width: 95%; /* 容器宽度为屏幕的90% */
+    height: auto; /* 允许高度根据内容自适应增长 */
+    min-height: 400rpx; /* 保证即使在特殊情况下也有一个最小高度 */
+    margin: 20rpx auto;
+    border-radius: 16rpx;
+    border: 3rpx dashed rgba(0, 0, 0, 0.2); /* 虚线颜色更淡、更细 */
+    /* 内部使用flex布局，让内容（占位符或图片网格）居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    padding: 20rpx; /* 内边距，确保图片网格不会紧贴边框 */
+    box-sizing: border-box; /* 让padding包含在width内 */
+    transition: all 0.3s ease;
+
+}
+
+.upload-hint {
+    font-size: 30rpx;
+    margin-top: 10rpx;
+}
+
+/* 预览标题 */
+.preview-title {
+    display: block;
+    font-size: 26rpx;
+    color: #555;
+    margin-bottom: 20rpx;
+    text-align: center;
+}
+
+.preview-wrapper {
+    width: 100%;
+}
+
+/* 占位符和预览网格的样式可以沿用之前的 */
+/* ... .upload-placeholder, .preview-grid, .preview-item-image ... */
+
+
+/* 操作选项区域 */
+.action-options {
+    width: 100%;
+    max-width: 690rpx;
+    padding: 20rpx;
+    background-color: #f7f8fa;
+    border-radius: 16rpx;
+}
+
+.checkbox-item {
+    display: block; /* 每个选项占一行 */
+    padding: 16rpx 10rpx;
+    font-size: 28rpx;
+    color: #333;
+}
+
+/* 执行按钮区域 */
+.execute-section {
+    width: 100%;
+    max-width: 690rpx;
+    margin-top: 20rpx;
+}
+
+.execute-btn {
+    width: 100%;
+    height: 90rpx;
+    line-height: 90rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+    border-radius: 45rpx;
+    color: black;
+    background: linear-gradient(145deg, #07c160, #05a84d); /* 主色调，绿色 */
+    transition: all 0.2s ease-out;
+}
+
+
+
+
+
+ /* 核心间距控制 */
+ .usage-doc {
+    margin-top: 40rpx;
+    padding: 24rpx;
+    background-color: rgba(230, 247, 255, 0.5); /* 淡蓝色半透明背景 */
+    border-radius: 20rpx;
+    border: 1px solid rgba(135, 208, 255, 0.5); /* 对应的淡蓝色边框 */
+  }
+  
+  .doc-title {
+    display: block;
+    margin-bottom: 20rpx;
+    font-size: 28rpx;
+    font-weight: bold;
+    color: #0d78e3; /* 与下载按钮主色调呼应 */
+  }
+  
+  .doc-item {
+    margin: 16rpx 0;
+    line-height: 1.5;
+    font-size: 26rpx;
+    color: #333;
+    display: flex; /* 为后续添加图标做准备 */
+    align-items: center;
+}
+  
+.doc-note {
+    margin-top: 20rpx;
+    line-height: 1.5;
+    font-size: 24rpx;
+    color: #888;
+}
+
+
+/* 响应式调整：针对屏幕较小的设备 */
+@media (max-width: 500px) {
+    .title {
+      font-size: 32rpx;
+    }
+    .upload-preview {
+      height: 40vh;
+      max-height: 300rpx;
+    }
+    .processed-preview {
+      height: 40vh;
+      max-height: 300rpx;
+    }
+    .action-buttons button {
+      height: 70rpx;
+      line-height: 70rpx;
+      font-size: 28rpx;
+    }
+  }
+  

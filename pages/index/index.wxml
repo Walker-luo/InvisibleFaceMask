@@ -2,7 +2,7 @@
 
 <view class="page-container" style="padding-top: {{statusBarHeight}}px;">
     <view class="title-container">
-        <text>Invisible FaceMask</text>
+        <image class="title-image" src="/image/Invisible FaceMask.png" mode="widthFix"></image>
     </view>
 
     <view class="container">
@@ -63,7 +63,7 @@
 
             <!-- 如果没有处理结果，则显示占位符 -->
             <view wx:else class="output-placeholder">
-                <image src="/images/icon_processed.png" class="placeholder-icon"/> 
+                <!-- <image src="/images/icon_processed.png" class="placeholder-icon"/>  -->
                 <text class="placeholder-text">处理结果将在此显示</text>
             </view>
         </view>
@@ -83,7 +83,7 @@
                 bindtouchstart="onDownloadBtnTouchStartt"
                 bindtouchend="onDownloadBtnTouchEnd"
                 bindtap="downloadImages"
-            >处理图片</button>
+            >下载图片</button>
         </view>
 
 
@@ -93,7 +93,7 @@
             <view class="doc-item">1. 点击上传区域选择JPG/PNG格式图片</view>
             <view class="doc-item">2. 点击"处理图片"注入防御性噪声</view>
             <view class="doc-item">3. 下载处理后图片用于安全分享</view>
-            <view class="doc-note">* 噪声强度自动适配图片分辨率</view>
+            <view class="doc-note">* 程序会自动定位和提取图片的人像</view>
         </view>
 
     </view>

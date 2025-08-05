@@ -1,15 +1,35 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/simple/simple"
   ],
-    "window": {
-      "navigationStyle": "default",
-      "backgroundTextStyle": "light",
-      "navigationBarBackgroundColor": "#fff",
-      "navigationBarTitleText": "Invisible FaceMask",
-      "navigationBarTextStyle": "black"
-    },
-
+  "tabBar": {
+    "color": "#8a8a8a",
+    "selectedColor": "#07c160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "原版",
+        "iconPath": "image/tabs/icon_index.png",
+        "selectedIconPath": "image/tabs/icon_index_active.png"
+      },
+      {
+        "pagePath": "pages/simple/simple",
+        "text": "简化版",
+        "iconPath": "image/tabs/icon_simple.png",
+        "selectedIconPath": "image/tabs/icon_simple_active.png"
+      }
+    ]
+  },
+  "window": {
+    "navigationStyle": "default",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Invisible FaceMask",
+    "navigationBarTextStyle": "black"
+  },
   "style": "v2",
   "renderer": "skyline",
   "rendererOptions": {
@@ -26,6 +46,4 @@
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
-
-
 }

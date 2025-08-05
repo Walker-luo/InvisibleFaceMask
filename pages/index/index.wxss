@@ -11,26 +11,20 @@
 .title-container {
     display: flex;
     justify-content: center;    /* 让子项在主轴（水平方向）上居中 */
-    width: 100%;     /* 可以设置宽度和边距等 */
+    width: 100%;
     margin-bottom: 30rpx;
     
     font-size: 48rpx;
     font-weight: bold;
     color: #1f2329;
-    }
-    
-/* 可以单独给text设置样式 */
-.title-container text {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: #333;
-    /* 应用渐变背景到文字上 */
-    background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
-    -webkit-background-clip: text ; /* 将背景裁剪为文字的形状 */
-    background-clip: text;
-    /* 关键：设置文字颜色为透明，从而透出下方的背景 */
-    color: transparent;
-    }
+}
+
+/* 为标题图片添加样式 */
+.title-image {
+    width: 50%; /* 将图片的宽度设置为父容器的50%，您可以按需调整 */
+    /* 或者您也可以使用 rpx 单位，例如：width: 400rpx; */
+}
+
 
 
     

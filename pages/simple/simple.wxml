@@ -1,0 +1,85 @@
+<!-- pages/simple/simple.wxml -->
+<view class="page-container" style="padding-top: {{statusBarHeight}}px;">
+    <view class="title-container">
+        <image class="title-image" src="/image/Invisible FaceMask.png" mode="widthFix"></image>
+    </view>
+
+    <view class="container">
+        <!-- 步骤一：智能上传/预览区域 -->
+        <view class="upload-container">
+            <view class="smart-upload-box" bindtap="chooseImage">    
+                <!-- 状态三：处理结果预览 -->
+                <block wx:if="{{processedImageList.length > 0}}">
+                    <view class="preview-wrapper">
+                        <text class="preview-title">处理结果预览（可点击重新上传）</text>
+                        <view class="preview-grid">
+                            <image 
+                                wx:for="{{processedDisplayList}}" 
+                                wx:key="*this" 
+                                src="{{item}}" 
+                                class="preview-item-image" 
+                                mode="aspectFill"
+                            />
+                        </view>
+                    </view>
+                </block>
+
+                <!-- 状态二：原始图片预览 -->
+                <block wx:elif="{{imageList.length > 0}}">
+                    <view class="preview-wrapper">
+                        <text class="preview-title">已选择{{imageList.length}}张图片（可点击重新上传）</text>
+                        <view class="preview-grid">
+                            <image 
+                                wx:for="{{displayList}}" 
+                                wx:key="*this" 
+                                src="{{item}}" 
+                                class="preview-item-image" 
+                                mode="aspectFill"
+                            />
+                        </view>
+                    </view>
+                </block>
+
+                <!-- 状态一：上传占位符 -->
+                <block wx:else>
+                    <view class="upload-placeholder">
+                        <text class="upload-hint">点击上传图片，单次最多20张</text>
+                    </view>
+                </block>
+            </view>
+        </view>
+
+        <!-- 步骤二：选择操作 -->
+        <view class="action-options">
+            <checkbox-group bindchange="onActionChange">
+                <label class="checkbox-item">
+                    <checkbox value="process" checked="true"/> 处理图片
+                </label>
+                <label class="checkbox-item">
+                    <checkbox value="download"/> 自动下载
+                </label>
+            </checkbox-group>
+        </view>
+
+        <!-- 步骤三：执行 -->
+        <view class="execute-section">
+            <button 
+                class="execute-btn"
+                bindtap="executeActions"
+                disabled="{{ imageList.length === 0 || selectedActions.length === 0 || isProcessing }}"
+                loading="{{ isProcessing }}"
+            >
+                {{ isProcessing ? '正在处理' : '开始执行' }}
+            </button>
+        </view>
+
+        <!-- 使用说明 (保持不变) -->
+        <view class="usage-doc">
+            <text class="doc-title">使用说明：</text>
+            <view class="doc-item">1. 点击上方区域选择图片</view>
+            <view class="doc-item">2. 勾选需要执行的操作</view>
+            <view class="doc-item">3. 点击"开始执行"即可</view>
+            <view class="doc-note">* 程序会自动定位和提取图片的人像</view>
+        </view>
+    </view>
+</view>
