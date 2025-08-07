@@ -1,4 +1,16 @@
-/* 在你原有的 wxss 文件基础上，添加或修改以下样式 */
+
+
+.page-container {
+    background: linear-gradient(to bottom, #f7f8fa, #ffffff);
+    height: 100vh; /* 关键一：让最外层容器的高度等于屏幕视口的高度 */
+    display: flex; /* 关键二：使用 flex 布局 */
+    flex-direction: column; /* 设置主轴为垂直方向 */
+    overflow: hidden; /* 防止最外层容器自己滚动 */
+    padding-top: env(safe-area-inset-top);  /* 替代 statusBarHeight */
+    padding-bottom: env(safe-area-inset-bottom); /* 避开底部横条 */
+  }
+
+
 
 /* 步骤标题 */
 .title-container {
@@ -17,6 +29,12 @@
     width: 50%; 
 }
 
+.scroll-container {
+    flex: 1; /* 让滚动容器占据所有剩余的垂直空间 */
+    overflow-y: auto; /* 在网页端或模拟器中，这可以帮助显示滚动条 */
+}
+
+
 /* 主体容器 */
 .container {
     display: flex;
@@ -27,6 +45,7 @@
     background-color: transparent; /* 移除背景色 */
   }
   
+
 
 /* 智能上传框 */
 .upload-container {
@@ -48,6 +67,7 @@
     box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);    /* 更弥散的阴影 */
     transition: all 0.3s ease;
 }
+
 .smart-upload-box {
     width: 95%; /* 容器宽度为屏幕的90% */
     height: auto; /* 允许高度根据内容自适应增长 */
@@ -59,17 +79,83 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    padding: 20rpx; /* 内边距，确保图片网格不会紧贴边框 */
+    padding: 10rpx; /* 内边距，确保图片网格不会紧贴边框 */
+
     box-sizing: border-box; /* 让padding包含在width内 */
     transition: all 0.3s ease;
 
+
+
+}
+
+.smart-upload-bg-image {
+    /* 关键3: 设置为绝对定位 */
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    margin-bottom: 20rpx;
+    z-index: -1;
+    opacity: 0.3; /* 设置为 20% 的透明度，您可以根据需要调整 */
+
+}
+
+
+
+.preview-wrapper {
+    margin-top: 10rpx;
+    padding: 10rpx;
+    background-color: #f7f7f7;
+    border-radius: 10rpx;
+  }
+
+
+  /* --- 九宫格布局核心样式 --- */
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20rpx;
+  }
+
+  /* 网格中的每一项 */
+.preview-item {
+    /* 关键3: 设置宽高比为1:1，使其成为一个正方形 */
+    aspect-ratio: 1 / 1; 
+    border-radius: 8rpx;
+    /* 如果图片本身没有圆角，这可以确保图片被裁剪为圆角 */
+    overflow: hidden; 
+  }
+  
+  /* 图片样式 */
+  .preview-item-image {
+    /* 关键4: 让图片完全填满它的正方形父容器 */
+    width: 100%;
+    height: 100%;
+  }
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgb(120, 7, 226);
+    /* 确保占位符也能撑满容器 */
+    width: 100%;
+    height: 100%;
+}
+
+
+.upload-text {
+    font-size: 40rpx;
+    margin-top: 10rpx;
+    font-weight: bold;
 }
 
 .upload-hint {
-    font-size: 30rpx;
+    font-size: 24rpx;
     margin-top: 10rpx;
+    color: rgb(8, 81, 218);
 }
+
 
 /* 预览标题 */
 .preview-title {
@@ -80,17 +166,9 @@
     text-align: center;
 }
 
-.preview-wrapper {
-    width: 100%;
-}
-
-/* 占位符和预览网格的样式可以沿用之前的 */
-/* ... .upload-placeholder, .preview-grid, .preview-item-image ... */
-
-
 /* 操作选项区域 */
 .action-options {
-    width: 100%;
+    width: 95%;
     max-width: 690rpx;
     padding: 20rpx;
     background-color: #f7f8fa;
@@ -98,11 +176,28 @@
 }
 
 .checkbox-item {
-    display: block; /* 每个选项占一行 */
+    /* display: block; 每个选项占一行 */
+    display: flex;          /* 启用弹性布局 */
+    align-items: center;    /* 垂直居中 */
     padding: 16rpx 10rpx;
     font-size: 28rpx;
     color: #333;
 }
+
+
+.checkbox-label {
+    flex: 1;                /* 如果需要文字占满剩余空间 */
+    font-size: 30rpx;       /* 更大些的字号，更易读 */
+    color: #4A4A4A;         /* 深灰色，看起来更柔和 */
+    line-height: 40rpx;     /* 与图标高度一致，垂直居中 */
+    letter-spacing: 1rpx;   /* 微调字间距 */
+  }
+
+.checkbox-icon {
+    width: 40rpx;
+    height: 40rpx;
+    margin: 0 12rpx;
+  }
 
 /* 执行按钮区域 */
 .execute-section {
@@ -124,8 +219,6 @@
     background: linear-gradient(145deg, #07c160, #05a84d); /* 主色调，绿色 */
     transition: all 0.2s ease-out;
 }
-
-
 
 
 

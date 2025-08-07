@@ -4,9 +4,7 @@ Page({
   data: {
     statusBarHeight: 0,      // 准备一个变量，用来存储状态栏高度
     imageList: [],    // 存储所有选中图片的路径
-    displayList: [],  // 存储需要在界面上展示的图片路径 (最多3张)
     processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
-    processedDisplayList: [], // 存储用于界面展示的图片列表
     isProcessing: false,         
     uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
     fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
@@ -29,26 +27,22 @@ Page({
     }
   },
 
+
   chooseImage: function () {
     wx.chooseMedia({
-      // 1. 修改count，允许最多选择20张
-      count: 20, 
+      // 1. 修改count，允许最多选择9张
+      count: 9, 
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
         if (res && res.tempFiles && res.tempFiles.length > 0) {
           // 2. 获取所有选中图片的临时路径
           const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
-          
-          // 3. 截取前2张用于显示
-          const displayPaths = allSelectedPaths.slice(0, 3);
-
-          // 4. 更新data中的数据
+    
+          // 3. 更新data中的数据
           this.setData({
             imageList: allSelectedPaths,
-            displayList: displayPaths,
             processedImageList: [], // 重置处理后的列表
-            processedDisplayList: [], // 重置处理后的显示列表
           });
 
           console.log("总共选择了 " + allSelectedPaths.length + " 张图片");
@@ -64,6 +58,7 @@ Page({
     });
   },
 
+  
   /**
    * 生命周期函数--监听页面初次渲染完成
    */

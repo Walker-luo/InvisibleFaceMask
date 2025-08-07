@@ -1,7 +1,10 @@
 /*页面容器 */
 .page-container {
     background: linear-gradient(to bottom, #f7f8fa, #ffffff);
-    min-height: 100vh;
+    height: 100vh; /* 关键一：让最外层容器的高度等于屏幕视口的高度 */
+    display: flex; /* 关键二：使用 flex 布局 */
+    flex-direction: column; /* 设置主轴为垂直方向 */
+    overflow: hidden; /* 防止最外层容器自己滚动 */
     padding-top: env(safe-area-inset-top);  /* 替代 statusBarHeight */
     padding-bottom: env(safe-area-inset-bottom); /* 避开底部横条 */
   }
@@ -26,7 +29,10 @@
 }
 
 
-
+.scroll-container {
+    flex: 1; /* 让滚动容器占据所有剩余的垂直空间 */
+    overflow-y: auto; /* 在网页端或模拟器中，这可以帮助显示滚动条 */
+}
     
 
 /* 主体容器 */
@@ -181,9 +187,7 @@
     height: 100%;
 }
 
-.upload-placeholder {
-    color: #999;
-}
+
 .output-placeholder {
     color: #b0b0b0;
 }
@@ -221,8 +225,8 @@
 }
 
 .placeholder-icon {
-    width: 100rpx;
-    height: 100rpx;
+    width: 300rpx;
+    height: 300rpx;
     margin-bottom: 20rpx;
     opacity: 0.6;
 }
