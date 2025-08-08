@@ -18,7 +18,6 @@
     justify-content: center;    /* 让子项在主轴（水平方向）上居中 */
     width: 100%;
     margin-bottom: 30rpx;
-    
     font-size: 48rpx;
     font-weight: bold;
     color: #1f2329;
@@ -28,6 +27,7 @@
 .title-image {
     width: 50%; 
 }
+
 
 .scroll-container {
     flex: 1; /* 让滚动容器占据所有剩余的垂直空间 */
@@ -96,10 +96,7 @@
     margin-bottom: 20rpx;
     z-index: -1;
     opacity: 0.3; /* 设置为 20% 的透明度，您可以根据需要调整 */
-
 }
-
-
 
 .preview-wrapper {
     margin-top: 10rpx;
@@ -107,7 +104,6 @@
     background-color: #f7f7f7;
     border-radius: 10rpx;
   }
-
 
   /* --- 九宫格布局核心样式 --- */
 .preview-grid {
@@ -137,7 +133,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: rgb(120, 7, 226);
     /* 确保占位符也能撑满容器 */
     width: 100%;
     height: 100%;
@@ -153,8 +148,9 @@
 .upload-hint {
     font-size: 24rpx;
     margin-top: 10rpx;
-    color: rgb(8, 81, 218);
+    /* color: rgb(8, 81, 218); */
 }
+
 
 
 /* 预览标题 */
@@ -166,60 +162,109 @@
     text-align: center;
 }
 
-/* 操作选项区域 */
-.action-options {
-    width: 95%;
-    max-width: 690rpx;
-    padding: 20rpx;
-    background-color: #f7f8fa;
-    border-radius: 16rpx;
-}
-
-.checkbox-item {
-    /* display: block; 每个选项占一行 */
-    display: flex;          /* 启用弹性布局 */
-    align-items: center;    /* 垂直居中 */
-    padding: 16rpx 10rpx;
+/* 动画的容器，负责将图标和文字垂直居中 */
+.processing-placeholder {
+    display: flex;
+    flex-direction: column; /* 垂直排列 */
+    justify-content: center; /* 垂直居中 */
+    align-items: center; /* 水平居中 */
+    width: 100%;
+    height: 100%; /* 占满父容器的高度，确保居中效果 */
+  }
+  
+  /* 旋转图标的样式和动画绑定 */
+  .processing-icon {
+    width: 80rpx; /* 图标的宽度 */
+    height: 80rpx; /* 图标的高度 */
+    animation: spin 1.5s linear infinite;
+  }
+  
+  /* 加载文字的样式 */
+  .processing-text {
+    margin-top: 20rpx; /* 与上方图标的间距 */
     font-size: 28rpx;
-    color: #333;
-}
-
-
-.checkbox-label {
-    flex: 1;                /* 如果需要文字占满剩余空间 */
-    font-size: 30rpx;       /* 更大些的字号，更易读 */
-    color: #4A4A4A;         /* 深灰色，看起来更柔和 */
-    line-height: 40rpx;     /* 与图标高度一致，垂直居中 */
-    letter-spacing: 1rpx;   /* 微调字间距 */
+    color: #f30808; /* 白色文字，适合深色背景 */
+    letter-spacing: 1px; /* 轻微增加字间距，提升质感 */
+  }
+  
+  
+  /* 动画的关键帧定义 */
+  /* 定义了一个名为 "spin" 的动画 */
+  @keyframes spin{
+    /* 动画开始时，旋转0度 */
+    from {
+      transform: rotate(0deg);
+    }
+    /* 动画结束时，旋转360度 */
+    to {
+      transform: rotate(360deg);
+    }
   }
 
-.checkbox-icon {
+
+
+
+/* 1. 容器样式  */
+.result-actions {
+    width: 95%; /* 容器宽度 */
+    max-width: 690rpx;
+    margin-top: 20px; /* 与上方区域的间距 */
+    background-color: #f7f8fa; /* 使用参考的背景色 */
+    border-radius: 16rpx; /* 使用参考的圆角 */
+    overflow: hidden; /* 防止内部元素溢出圆角边界 */
+  }
+  
+  /* 2. 按钮样式 (参考 .checkbox-item) */
+  .action-btn {
+    /* 布局：使用 flex 让图标和文字水平对齐 */
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    width: 100%;
+    
+    /* 外观：重置默认按钮样式，使其看起来像列表项 */
+    background-color: transparent;
+    border: none; /* 去掉默认边框 */
+    padding: 24rpx 20rpx; /* 设置内边距，参考 .checkbox-item */
+    text-align: left; /* 文字左对齐 */
+    line-height: 1.5; /* 保证行高一致性 */
+    border-radius: 0; /* 按钮自身不需要圆角 */
+  }
+  
+  
+  /* 4. 在列表项之间添加分割线 */
+  .action-btn:not(:last-child) {
+    border-bottom: 1rpx solid #ebedf0; /* 细微的分割线 */
+  }
+  
+  /* 5. 图标样式 (参考 .checkbox-icon) */
+  .btn-icon {
     width: 40rpx;
     height: 40rpx;
-    margin: 0 12rpx;
+    margin-right: 24rpx; /* 图标和文字之间的右边距 */
   }
-
-/* 执行按钮区域 */
-.execute-section {
-    width: 100%;
-    max-width: 690rpx;
-    margin-top: 20rpx;
-}
-
-.execute-btn {
-    width: 100%;
-    height: 90rpx;
-    line-height: 90rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32rpx;
-    border-radius: 45rpx;
-    color: black;
-    background: linear-gradient(145deg, #07c160, #05a84d); /* 主色调，绿色 */
-    transition: all 0.2s ease-out;
-}
-
+  
+  /* 6. 文本标签样式 (参考 .checkbox-label) */
+  .btn-label {
+    flex: 1; /* 占据所有剩余空间，让布局更稳定 */
+    font-size: 30rpx;
+    color: #4A4A4A;
+    letter-spacing: 1rpx;
+  }
+  
+  /* 7. 为按钮的禁用状态添加样式 */
+.action-btn[disabled] {
+    /* 重置背景色，因为小程序会给 disabled 按钮一个默认的灰色背景 */
+    background-color: transparent !important; 
+  }
+.action-btn[disabled] .btn-icon,
+.action-btn[disabled] .btn-label {
+    opacity: 0.4; /* 让图标和文字变灰，表示不可用 */
+  }
+  
+  /* 8. 点击反馈效果 */
+.action-btn:active {
+    background-color: #e8e8e8; /* 添加一个简单的点击态背景色 */
+  }
 
 
  /* 核心间距控制 */

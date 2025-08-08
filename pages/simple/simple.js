@@ -6,30 +6,31 @@ Page({
     imageList: [],    // 存储所有选中图片的路径
     processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
     isProcessing: false,   
-    selectedActions: ['process'], // 用户勾选的操作，默认为"处理图片"
 
     uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
     fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
   },
 
-  onLoad(options) {
+    onLoad(options) {
     // 在页面加载时，获取系统信息
-    try {
-      const info = wx.getWindowInfo();
-      // 将获取到的状态栏高度（单位px）设置到data中
-      this.setData({
-        statusBarHeight: info.statusBarHeight
-      });
-    } catch (e) {
-      // 获取失败则使用一个默认值
-      this.setData({
-        statusBarHeight: 20 // 兜底值
-      });
-    }
+        try {
+        const info = wx.getWindowInfo();
+        // 将获取到的状态栏高度（单位px）设置到data中
+        this.setData({
+            statusBarHeight: info.statusBarHeight
+        });
+        } catch (e) {
+        // 获取失败则使用一个默认值
+        this.setData({
+            statusBarHeight: 20 // 兜底值
+        });
+        }
   },
 
 
-  chooseImage: function () {
+
+
+    chooseImage: function () {
     wx.chooseMedia({
       // 1. 修改count，允许最多选择9张
       count: 9, 
@@ -49,6 +50,7 @@ Page({
           console.log("总共选择了 " + allSelectedPaths.length + " 张图片");
           console.log("待上传的图片列表:", this.data.imageList);
         }
+        this.processImages();
       },
       fail: (err) => {
         // 用户取消选择时也会进入fail，可以不用提示错误
@@ -59,54 +61,7 @@ Page({
     });
   },
 
-      // 2. 监听用户勾选的操作
-      onActionChange: function (e) {
-        this.setData({
-            selectedActions: e.detail.value
-        });
-    },
-
-    // 3. 点击"开始执行"按钮，总调度函数
-    executeActions: async function () {
-        const { imageList, selectedActions, isProcessing } = this.data;
-
-        if (imageList.length === 0) {
-            wx.showToast({ title: '请先选择图片', icon: 'none' });
-            return;
-        }
-        if (isProcessing) return;
-
-        // 【核心流程控制】
-        try {
-            // if (selectedActions.includes('process') || selectedActions.includes('download') || selectedActions.includes('share_friends') || selectedActions.includes('share')) {
-            //     await this.processImages(); 
-            // }
-            await this.processImages(); // 等待图片处理完成
-
-            // 步骤二：自动下载
-            if (selectedActions.includes('download')) {
-                // 不必等待下载完成，可以立即提示用户去分享
-                this.downloadImages();
-            }
-
-            // 步骤三和四：引导分享
-            if (selectedActions.includes('share_friends') || selectedActions.includes('share')) {
-                wx.showModal({
-                    title: '可以分享啦',
-                    content: '图片已处理完成，请点击右上角 [...] 进行分享。',
-                    showCancel: false,
-                    confirmText: '我知道了'
-                });
-            }
-
-        } catch (error) {
-            // processImages内部的错误会在这里被捕获
-            console.error("执行流程出错: ", error);
-            // processImages 内部已经有 toast 提示，这里可以不再重复提示
-        }
-    },
-
-    // 4. 处理图片（上传并获取处理结果） - (集成自您的代码)
+      // 4. 处理图片（上传并获取处理结果） - (集成自您的代码)
     processImages: function() {
         return new Promise((resolve, reject) => {
             if (this.data.imageList.length === 0) {
@@ -275,24 +230,40 @@ Page({
         saveNext(0);
     },
 
+    // “分享朋友圈”按钮的事件处理函数
+    shareToTimelineHandler: function() {
+        // 这个函数不直接分享，而是引导用户去点击右上角菜单
+        // 这是微信官方推荐的、唯一能触发朋友圈分享的方式
+        wx.showShareMenu({
+            menus: ['shareTimeline'], // 在菜单中只显示“分享到朋友圈”
+            success: () => {
+                wx.showToast({
+                    title: '请点击右上角 ...，再选择“分享到朋友圈”',
+                    icon: 'none',
+                    duration: 3000 // 提示持续3秒
+                });
+            },
+            fail: (err) => {
+                console.error('拉起朋友圈分享菜单失败', err);
+                wx.showToast({
+                    title: '操作失败，请稍后重试',
+                    icon: 'none'
+                });
+            }
+        });
+    },
 
-    // 7. 监听用户"转发给朋友"的动作
+    // 监听用户"转发给朋友"的动作
     onShareAppMessage: function (res) {
-        // 条件检查：必须勾选了“分享给好友”且有处理好的图片
-        if (!this.data.selectedActions.includes('share_friends') || this.data.processedImageList.length === 0) {
-            wx.showToast({
-                title: '请先处理并勾选分享',
-                icon: 'none'
-            });
-            // 返回默认分享，或阻止分享
+        if (this.data.processedImageList.length === 0) {
+            // 返回一个默认的、通用的分享卡片
             return {
                 title: '快来试试这个智能图片处理工具！',
-                path: '/pages/simple/simple'
+                path: '/pages/simple/simple' // 分享到首页
             };
         }
 
         // 使用处理后的第一张图片作为分享卡片的封面
-        // 【重要】这里的 imageUrl 必须是公网可访问的真实图片URL
         const firstImageId = this.data.processedImageList[0].fileId;
         const shareImageUrl = `${this.data.fetchImageUrlBase}${firstImageId}`;
 
@@ -304,11 +275,9 @@ Page({
         };
     },
 
-    // 8. 监听用户"分享到朋友圈"的动作
+    // 监听用户"分享到朋友圈"的动作
     onShareTimeline: function () {
-        // 条件检查：必须勾选了“分享朋友圈”且有处理好的图片
-        if (!this.data.selectedActions.includes('share') || this.data.processedImageList.length === 0) {
-            // 返回空对象，微信会提示“无法分享到朋友圈”
+        if (this.data.processedImageList.length === 0) {
             return {};
         }
 
@@ -323,33 +292,29 @@ Page({
         };
     },
 
-    // 9. 页面加载，处理从分享卡片进入的场景
-    onLoad: function(options) {
-        // 检查页面启动参数中是否有 'share_id'
-        if (options.share_id) {
-            wx.showLoading({ title: '加载分享中...' });
-            const sharedImageUrl = `${this.data.fetchImageUrlBase}${options.share_id}`;
-            // 下载分享的图片，以便在界面上展示
-            wx.downloadFile({
-                url: sharedImageUrl,
-                success: (res) => {
-                    if (res.statusCode === 200) {
-                        this.setData({
-                            // 将分享的这张图片放入处理结果预览区
-                            processedDisplayList: [res.tempFilePath],
-                            // 清空其他列表，提供一个干净的分享预览页
-                            imageList: [],
-                            displayList: [],
-                            processedImageList: []
-                        });
-                    }
-                },
-                complete: () => {
-                    wx.hideLoading();
-                }
-            });
-        }
-    }
- 
+    // // 页面加载，处理从分享卡片进入的场景 (此函数无需任何修改)
+    // onLoad: function(options) {
+    //     if (options.share_id) {
+    //         wx.showLoading({ title: '加载分享中...' });
+    //         const sharedImageUrl = `${this.data.fetchImageUrlBase}${options.share_id}`;
+    //         wx.downloadFile({
+    //             url: sharedImageUrl,
+    //             success: (res) => {
+    //                 if (res.statusCode === 200) {
+    //                     this.setData({
+    //                         // 将分享的这张图片放入处理结果预览区
+    //                         processedDisplayList: [res.tempFilePath],
+    //                         // 清空其他列表，提供一个干净的分享预览页
+    //                         imageList: [],
+    //                         processedImageList: []
+    //                     });
+    //                 }
+    //             },
+    //             complete: () => {
+    //                 wx.hideLoading();
+    //             }
+    //         });
+    //     }
+    // }
 
 })

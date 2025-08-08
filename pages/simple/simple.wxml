@@ -1,7 +1,8 @@
 <!-- pages/simple/simple.wxml -->
 <view class="page-container" style="padding-top: {{statusBarHeight}}px;">
+
     <view class="title-container">
-        <image class="title-image" src="/image/Invisible FaceMask.png" mode="widthFix"></image>
+        <image class="title-image" src="/image/InvisibleFaceMask.png" mode="widthFix"></image>
     </view>
 
     <scroll-view class="scroll-container" scroll-y="true">
@@ -25,20 +26,18 @@
                         </view>
                     </block>
 
-                    <!-- 状态二：原始图片预览 -->
-                    <block wx:elif="{{imageList.length > 0}}">
-                        <view class="preview-wrapper">
-                            <text class="preview-title">已选择{{imageList.length}}张图片（可点击重新上传）</text>
-                            <view class="preview-grid">
-                                <view wx:for="{{imageList}}" wx:key="*this" class="preview-item">
-                                <image 
-                                    src="{{item}}"
-                                    class="preview-item-image" 
-                                    mode="aspectFill"/>
-                                </view>
-                            </view>
-                        </view>
-                    </block>
+                <!-- 状态二：正在处理中 -->
+                <block wx:elif="{{isProcessing}}">
+                    <view class="processing-placeholder">
+                        <!-- 使用自定义的旋转图标 -->
+                        <image 
+                            class="processing-icon" 
+                            src="/image/simple/process.png" 
+                            mode="aspectFit"
+                        />
+                        <view class="processing-text">全力处理中...</view>
+                    </view>
+                </block>
 
                     <!-- 状态一：上传占位符 -->
                     <block wx:else>
@@ -50,46 +49,31 @@
                 </view>
             </view>
 
-            <!-- 步骤二：选择操作 -->
-            <view class="action-options">
-                <checkbox-group bindchange="onActionChange">
-                    <label class="checkbox-item">
-                        <checkbox value="process" checked="true"/>
-                        <image class="checkbox-icon" src="/image/simple/process.png" />
-                        <text class="checkbox-label">处理图片</text>
-                    </label>
 
-                    <label class="checkbox-item">
-                        <checkbox value="download"/> 
-                        <image class="checkbox-icon" src="/image/simple/download.png" />
-                        <text class="checkbox-label">自动下载</text>
-                    </label>
-
-                    <label class="checkbox-item">
-                        <checkbox value="share_friends"/> 
-                        <image class="checkbox-icon" src="/image/simple/share_friends.png" />
-                        <text class="checkbox-label">分享给好友</text>
-                    </label>
-
-                    <label class="checkbox-item">
-                        <checkbox value="share"/> 
-                        <image class="checkbox-icon" src="/image/simple/share.png" />
-                        <text class="checkbox-label">分享朋友圈</text>
-                    </label>   
-                </checkbox-group>
-            </view>
-
-            <!-- 步骤三：执行 -->
-            <view class="execute-section">
-                <button 
-                    class="execute-btn"
-                    bindtap="executeActions"
-                    disabled="{{ imageList.length === 0 || selectedActions.length === 0 || isProcessing }}"
-                    loading="{{ isProcessing }}"
-                >
-                    {{ isProcessing ? '正在处理' : '开始执行' }}
+            <!-- 新增：结果操作区 (始终显示) -->
+            <view class="result-actions">
+                <!-- 保存到相册 -->
+                <button class="action-btn download-btn" bindtap="downloadImages"
+                        disabled="{{processedImageList.length === 0 || isProcessing}}">
+                    <image class="btn-icon" src="/image/simple/download.png" />
+                    <text class="btn-label">保存到相册</text>
+                </button>
+                
+                <!-- 分享给好友 -->
+                <button class="action-btn share-friends-btn" open-type="share"
+                        disabled="{{processedImageList.length === 0 || isProcessing}}">
+                    <image class="btn-icon" src="/image/simple/share_friends.png" />
+                    <text class="btn-label">分享给好友</text>
+                </button>
+                
+                <!-- 分享朋友圈 -->
+                <button class="action-btn share-timeline-btn" bindtap="shareToTimelineHandler"
+                        disabled="{{processedImageList.length === 0 || isProcessing}}">
+                    <image class="btn-icon" src="/image/simple/share.png" />
+                    <text class="btn-label">分享朋友圈</text>
                 </button>
             </view>
+
 
             <!-- 使用说明 (保持不变) -->
             <view class="usage-doc">

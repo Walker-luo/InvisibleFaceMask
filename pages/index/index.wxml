@@ -2,7 +2,7 @@
 
 <view class="page-container" style="padding-top: {{statusBarHeight}}px;">
     <view class="title-container">
-        <image class="title-image" src="/image/Invisible FaceMask.png" mode="widthFix"></image>
+        <image class="title-image" src="/image/InvisibleFaceMask.png" mode="widthFix"></image>
     </view>
 
     <scroll-view class="scroll-container" scroll-y="true">

@@ -16,7 +16,6 @@
     justify-content: center;    /* 让子项在主轴（水平方向）上居中 */
     width: 100%;
     margin-bottom: 30rpx;
-    
     font-size: 48rpx;
     font-weight: bold;
     color: #1f2329;
