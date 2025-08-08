@@ -252,7 +252,7 @@
     margin-top: 20rpx;
     line-height: 1.5;
     font-size: 24rpx;
-    color: #888;
+    color: rgb(240, 8, 8);
 }
 
 

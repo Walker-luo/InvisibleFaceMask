@@ -39,8 +39,6 @@ Page({
     },
 
 
-
-
     chooseImage: function () {
       wx.chooseMedia({
         // 1. 修改count，允许最多选择20张

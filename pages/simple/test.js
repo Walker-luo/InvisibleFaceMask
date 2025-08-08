@@ -1,66 +1,46 @@
-// pages/simple.js
+// pages/simple/simple.js
 Page({
+    data: {
+        // --- 基础UI和状态 ---
+        statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+        imageList: [], // 存储用户选择的原始图片的临时路径
+        displayList: [], // 用于在界面上预览的原始图片列表（最多9张）
+        selectedActions: ['process'], // 用户勾选的操作，默认为"处理图片"
+        isProcessing: false, // 是否正在处理中，用于禁用按钮
 
-  data: {
-    statusBarHeight: 0,      // 准备一个变量，用来存储状态栏高度
-    imageList: [],    // 存储所有选中图片的路径
-    processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
-    isProcessing: false,   
-    selectedActions: ['process'], // 用户勾选的操作，默认为"处理图片"
+        // --- 处理结果数据 ---
+        // 存储处理后图片的 fileId，这是核心数据，用于后续下载和分享
+        // 格式: [{ fileId: 'id1' }, { fileId: 'id2' }, ...]
+        processedImageList: [], 
+        // 存储处理后用于预览的图片的临时路径（最多3张）
+        processedDisplayList: [],
 
-    uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
-    fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
-  },
+        // --- 后端API配置 (重要：请替换成您自己的URL) ---
+        uploadUrl: 'https://your-server.com/api/upload', // 您的图片上传接口
+        fetchImageUrlBase: 'https://your-cdn.com/images/' // 您的图片访问URL前缀
+    },
 
-  onLoad(options) {
-    // 在页面加载时，获取系统信息
-    try {
-      const info = wx.getWindowInfo();
-      // 将获取到的状态栏高度（单位px）设置到data中
-      this.setData({
-        statusBarHeight: info.statusBarHeight
-      });
-    } catch (e) {
-      // 获取失败则使用一个默认值
-      this.setData({
-        statusBarHeight: 20 // 兜底值
-      });
-    }
-  },
+    // 1. 用户选择图片
+    chooseImage: function () {
+        if (this.data.isProcessing) return; // 处理中则不响应
+        wx.chooseMedia({
+            count: 20,
+            mediaType: ['image'],
+            sourceType: ['album', 'camera'],
+            success: (res) => {
+                this.setData({
+                    imageList: res.tempFiles.map(file => file.tempFilePath),
+                    displayList: res.tempFiles.map(file => file.tempFilePath).slice(0, 9), // UI上最多预览9张
+                    // 重置处理结果
+                    processedImageList: [],
+                    processedDisplayList: []
+                });
+            }
+        });
+    },
 
-
-  chooseImage: function () {
-    wx.chooseMedia({
-      // 1. 修改count，允许最多选择9张
-      count: 9, 
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        if (res && res.tempFiles && res.tempFiles.length > 0) {
-          // 2. 获取所有选中图片的临时路径
-          const allSelectedPaths = res.tempFiles.map(file => file.tempFilePath);
-    
-          // 3. 更新data中的数据
-          this.setData({
-            imageList: allSelectedPaths,
-            processedImageList: [], // 重置处理后的列表
-          });
-
-          console.log("总共选择了 " + allSelectedPaths.length + " 张图片");
-          console.log("待上传的图片列表:", this.data.imageList);
-        }
-      },
-      fail: (err) => {
-        // 用户取消选择时也会进入fail，可以不用提示错误
-        if (err.errMsg !== "chooseMedia:fail cancel") {
-            console.error("选择图片失败：", err);
-        }
-      }
-    });
-  },
-
-      // 2. 监听用户勾选的操作
-      onActionChange: function (e) {
+    // 2. 监听用户勾选的操作
+    onActionChange: function (e) {
         this.setData({
             selectedActions: e.detail.value
         });
@@ -74,16 +54,21 @@ Page({
             wx.showToast({ title: '请先选择图片', icon: 'none' });
             return;
         }
+        if (selectedActions.length === 0) {
+            wx.showToast({ title: '请勾选操作', icon: 'none' });
+            return;
+        }
         if (isProcessing) return;
 
         // 【核心流程控制】
         try {
-            // if (selectedActions.includes('process') || selectedActions.includes('download') || selectedActions.includes('share_friends') || selectedActions.includes('share')) {
-            //     await this.processImages(); 
-            // }
-            await this.processImages(); // 等待图片处理完成
+            // 步骤一：处理图片（如果勾选或后续操作依赖它）
+            // 只要勾选了下载或分享，就必须先执行处理
+            if (selectedActions.includes('process') || selectedActions.includes('download') || selectedActions.includes('share_friends') || selectedActions.includes('share')) {
+                await this.processImages(); // 等待图片处理完成
+            }
 
-            // 步骤二：自动下载
+            // 步骤二：自动下载（如果勾选了）
             if (selectedActions.includes('download')) {
                 // 不必等待下载完成，可以立即提示用户去分享
                 this.downloadImages();
@@ -150,7 +135,13 @@ Page({
                 const fullProcessedList = allFileIds.map(id => ({ fileId: id }));
                 that.setData({ processedImageList: fullProcessedList });
 
-                const previewTasks = allFileIds.map(fileId => {
+                // 下载前3张作为界面预览
+                const previewLimit = Math.min(3, allFileIds.length); 
+                if (previewLimit === 0) {
+                    return Promise.resolve(); // 如果没有成功上传的图片，直接进入下一步
+                }
+
+                const previewTasks = allFileIds.slice(0, previewLimit).map(fileId => {
                     return new Promise(previewResolve => {
                         const downloadUrl = `${that.data.fetchImageUrlBase}${fileId}`;
                         wx.downloadFile({
@@ -163,9 +154,8 @@ Page({
 
                 return Promise.all(previewTasks).then(previewUrls => {
                     that.setData({
-                        processedImageList: previewUrls.filter(url => url !== null)
+                        processedDisplayList: previewUrls.filter(url => url !== null)
                     });
-                    console.log('processedImageList 的值是:', that.data.processedImageList);
                 });
             })
             .then(() => {
@@ -184,21 +174,17 @@ Page({
         });
     },
 
+    // 5. 下载图片（含权限处理）- (集成自您的代码)
     downloadImages: function() {
-        // 检查包含临时路径的 displayList，而不是包含 fileId 的 imageList
         if (!this.data.processedImageList || !this.data.processedImageList.length) {
-            wx.showToast({ title: '没有可保存的图片', icon: 'none' });
+            wx.showToast({ title: '请先处理图片', icon: 'none' });
             return;
         }
-
-        // 权限检查逻辑保持不变，这是非常好的实践
         wx.getSetting({
             success: (res) => {
                 if (res.authSetting['scope.writePhotosAlbum']) {
-                    // 已授权，直接开始保存
-                    this.startBatchSave(); // 调用已优化的新函数名
+                    this.startBatchDownload();
                 } else if (res.authSetting['scope.writePhotosAlbum'] === false) {
-                    // 用户曾拒绝，引导去设置页
                     wx.showModal({
                         title: '授权提示',
                         content: '需要您的授权才能保存图片到相册，是否去设置中开启？',
@@ -207,7 +193,7 @@ Page({
                                 wx.openSetting({
                                     success: (settingRes) => {
                                         if (settingRes.authSetting['scope.writePhotosAlbum']) {
-                                            this.startBatchSave();
+                                            this.startBatchDownload();
                                         } else {
                                             wx.showToast({ title: '您未授权', icon: 'none' });
                                         }
@@ -217,10 +203,9 @@ Page({
                         }
                     });
                 } else {
-                    // 从未询问过，发起授权请求
                     wx.authorize({
                         scope: 'scope.writePhotosAlbum',
-                        success: () => this.startBatchSave(),
+                        success: () => this.startBatchDownload(),
                         fail: () => wx.showToast({ title: '您拒绝了授权', icon: 'none' })
                     });
                 }
@@ -228,53 +213,50 @@ Page({
         });
     },
 
-    // 6. 批量保存辅助函数
-    startBatchSave: function() {
-        // 直接使用包含临时文件路径的processedImageList
-        const imagesToSave = this.data.processedImageList;
-        const totalCount = imagesToSave.length;
+    // 6. 批量下载辅助函数 - (集成自您的代码)
+    startBatchDownload: function() {
+        const imagesToDownload = this.data.processedImageList;
+        const totalCount = imagesToDownload.length;
         if (totalCount === 0) return;
         
-        let successCount = 0;
-        let failCount = 0;
+        let successCount = 0, failCount = 0;
 
-        // 使用递归函数实现串行保存
-        const saveNext = (index) => {
+        const downloadNext = (index) => {
             if (index >= totalCount) {
                 wx.hideLoading();
                 wx.showToast({
-                    title: failCount > 0 ? `成功${successCount}, 失败${failCount}` : '全部保存成功',
-                    icon: failCount > 0 ? 'none' : 'success'
+                    title: failCount ? `成功${successCount},失败${failCount}` : '全部保存成功',
+                    icon: failCount ? 'none' : 'success'
                 });
                 return;
             }
 
             wx.showLoading({ title: `正在保存 ${index + 1}/${totalCount}`, mask: true });
-            
-            // 直接从数组中获取已下载好的本地临时路径
-            const tempFilePath = imagesToSave[index];
+            const downloadUrl = `${this.data.fetchImageUrlBase}${imagesToDownload[index].fileId}`;
 
-            // **核心优化**: 跳过 wx.downloadFile，直接调用 wx.saveImageToPhotosAlbum
-            wx.saveImageToPhotosAlbum({
-                filePath: tempFilePath,
-                success: () => {
-                    successCount++;
+            wx.downloadFile({
+                url: downloadUrl,
+                success: (res) => {
+                    if (res.statusCode === 200) {
+                        wx.saveImageToPhotosAlbum({
+                            filePath: res.tempFilePath,
+                            success: () => successCount++,
+                            fail: () => failCount++,
+                            complete: () => downloadNext(index + 1)
+                        });
+                    } else {
+                        failCount++;
+                        downloadNext(index + 1);
+                    }
                 },
-                fail: (err) => {
+                fail: () => {
                     failCount++;
-                    console.error(`保存图片 ${tempFilePath} 失败:`, err);
-                },
-                complete: () => {
-                    // 无论成功或失败，都继续处理下一张
-                    saveNext(index + 1);
+                    downloadNext(index + 1);
                 }
             });
         };
-
-        // 从第一张图片(索引为0)开始执行保存链
-        saveNext(0);
+        downloadNext(0);
     },
-
 
     // 7. 监听用户"转发给朋友"的动作
     onShareAppMessage: function (res) {
@@ -350,6 +332,4 @@ Page({
             });
         }
     }
- 
-
-})
+});

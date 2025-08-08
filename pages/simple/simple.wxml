@@ -15,13 +15,12 @@
                         <view class="preview-wrapper">
                             <text class="preview-title">处理结果预览（可点击重新上传）</text>
                             <view class="preview-grid">
+                                <view wx:for="{{processedImageList}}" wx:key="*this" class="preview-item">
                                 <image 
-                                    wx:for="{{processedImageList}}" 
-                                    wx:key="*this" 
-                                    src="{{item}}" 
+                                    src="{{item}}"
                                     class="preview-item-image" 
-                                    mode="aspectFill"
-                                />
+                                    mode="aspectFill"/>
+                                </view>
                             </view>
                         </view>
                     </block>
@@ -95,10 +94,12 @@
             <!-- 使用说明 (保持不变) -->
             <view class="usage-doc">
                 <text class="doc-title">使用说明：</text>
+                <view class="doc-note">*处理图片为必须选项</view>
                 <view class="doc-item">1. 点击上方区域选择图片</view>
                 <view class="doc-item">2. 勾选需要执行的操作</view>
                 <view class="doc-item">3. 点击"开始执行"即可</view>
-                <view class="doc-note">* 程序会自动定位和提取图片的人像</view>
+
+
             </view>
         </view>
     </scroll-view>
