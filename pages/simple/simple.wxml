@@ -78,11 +78,9 @@
             <!-- 使用说明 (保持不变) -->
             <view class="usage-doc">
                 <text class="doc-title">使用说明：</text>
-                <view class="doc-note">*处理图片为必须选项</view>
+                <view class="doc-note">*上传图片后自动处理</view>
                 <view class="doc-item">1. 点击上方区域选择图片</view>
-                <view class="doc-item">2. 勾选需要执行的操作</view>
-                <view class="doc-item">3. 点击"开始执行"即可</view>
-
+                <view class="doc-item">2. 处理选择后续操作</view>
 
             </view>
         </view>

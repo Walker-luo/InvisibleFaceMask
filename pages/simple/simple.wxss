@@ -142,12 +142,15 @@
 .upload-text {
     font-size: 40rpx;
     margin-top: 10rpx;
-    font-weight: bold;
+    letter-spacing: 1px; /* ✨ 提升质感的关键：增加字间距 */
+    /* font-weight: bold; */
 }
 
 .upload-hint {
     font-size: 24rpx;
     margin-top: 10rpx;
+    color: #8a8a8e;   /* 一个更柔和的灰色 */
+    letter-spacing: 1px; /* ✨ 提升质感的关键：增加字间距 */
     /* color: rgb(8, 81, 218); */
 }
 

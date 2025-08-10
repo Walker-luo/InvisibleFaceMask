@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/simple/simple"
+    "pages/simple/simple",
+    "pages/index/index"
   ],
   "tabBar": {
     "color": "#8a8a8a",
@@ -9,17 +9,17 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [
-      {
+        {
+            "pagePath": "pages/simple/simple",
+            "text": "简洁页面",
+            "iconPath": "image/tabs/icon_simple.png",
+            "selectedIconPath": "image/tabs/icon_simple_active.png"
+          },
+        {
         "pagePath": "pages/index/index",
-        "text": "原版",
+        "text": "批量处理",
         "iconPath": "image/tabs/icon_index.png",
         "selectedIconPath": "image/tabs/icon_index_active.png"
-      },
-      {
-        "pagePath": "pages/simple/simple",
-        "text": "简化版",
-        "iconPath": "image/tabs/icon_simple.png",
-        "selectedIconPath": "image/tabs/icon_simple_active.png"
       }
     ]
   },
