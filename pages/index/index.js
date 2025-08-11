@@ -9,8 +9,8 @@ Page({
     processedImageList: [], // 存储处理/上传后的图片URL列表 (现在存储fileId和type)
     processedDisplayList: [], // 存储用于界面展示的图片列表
     isProcessing: false,         
-    uploadUrl: 'http://202.120.36.7:40580/upload',  // 图片上传接口 (用于接收二进制流)
-    fetchImageUrlBase: 'http://202.120.36.7:40580/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
+    uploadUrl: 'http://202.120.36.7:40555/upload',  // 图片上传接口 (用于接收二进制流)
+    fetchImageUrlBase: 'http://202.120.36.7:40555/image/', // 用于获取处理后的图片的基础URL，匹配后端 /image/<file_id>/
     },
 
   
@@ -42,7 +42,7 @@ Page({
     chooseImage: function () {
       wx.chooseMedia({
         // 1. 修改count，允许最多选择20张
-        count: 20, 
+        count: 100, 
         mediaType: ['image'],
         sourceType: ['album', 'camera'],
         success: (res) => {
@@ -287,10 +287,7 @@ Page({
         });
     },
 
-    /**
-     * 【新增的】串行批量下载辅助函数
-     * @description 只有在获取到权限后才会被调用
-     */
+    // 串行批量下载辅助函数
     startBatchDownload: function() {
         const imagesToDownload = this.data.processedImageList;
         const totalCount = imagesToDownload.length;

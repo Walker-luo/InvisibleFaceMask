@@ -27,7 +27,7 @@
                     <!-- 如果没有图片，则显示上传占位符 -->
                     <view wx:else class="upload-placeholder">
                         <text class="upload-text">点击上传图片</text>
-                        <text class="upload-hint">支持jpg/png格式，单次最多20张</text>
+                        <text class="upload-hint">支持jpg/png格式，单次最多100张</text>
                     </view>
                 </view>
 
